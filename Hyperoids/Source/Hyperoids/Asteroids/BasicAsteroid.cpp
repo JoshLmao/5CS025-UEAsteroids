@@ -21,17 +21,13 @@ ABasicAsteroid::ABasicAsteroid()
 	capsuleComponent->SetCapsuleHalfHeight(150.0f);
 	capsuleComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
-	UStaticMeshComponent* asteroidComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT(""));
+	UStaticMeshComponent* asteroidComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AsteroidMesh"));
 	asteroidComponent->SetupAttachment(RootComponent);
 
 	if (m_asteroidMesh != NULL)
-	{
 		asteroidComponent->SetStaticMesh(m_asteroidMesh);
-	} 
 	else 
-	{
 		UE_LOG(LogTemp, Warning, TEXT("No Mesh set for BasicAsteroid. Won't have any"));
-	}
 
 	OnActorBeginOverlap.AddDynamic(this, &ABasicAsteroid::OnOverlap);
 	OnActorEndOverlap.AddDynamic(this, &ABasicAsteroid::OnEndOverlap);

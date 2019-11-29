@@ -19,12 +19,16 @@ ASpaceshipPawn::ASpaceshipPawn()
 
 	RootComponent = m_shipMeshComponent;
 	
-	// Set model of player
-	if (m_shipModel != NULL)
-		m_shipMeshComponent->SetStaticMesh(m_shipModel);
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> ShipMesh(TEXT("StaticMesh'/Game/ExampleContent/Input_Examples/Meshes/SM_UFO_Main.SM_UFO_Main'"));
+	if (ShipMesh.Succeeded())
+	{
+		m_shipMeshComponent->SetStaticMesh(ShipMesh.Object);
+	}
 	else
+	{
 		UE_LOG(LogTemp, Warning, TEXT("No Mesh has been set for the player!"));
-	
+	}
+
 	m_currentForwardSpeed = 0.0f;
 	m_currentRotationSpeed = 0.0f;
 	m_currentFire = 0.0f;
@@ -50,12 +54,12 @@ void ASpaceshipPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	const FVector local = FVector(m_currentForwardSpeed * DeltaTime, 0.0f, 0.0f);
-	AddActorLocalOffset(local, true);
+	const FVector LocalMove = FVector(m_currentForwardSpeed * DeltaTime, 0.f, 0.f);
+	AddActorLocalOffset(LocalMove, true);
 
-	FRotator deltaRotation(0, 0, 0);
-	deltaRotation.Yaw = m_currentRotationSpeed * DeltaTime;
-	AddActorLocalRotation(deltaRotation);
+	FRotator DeltaRotation(0, 0, 0);
+	DeltaRotation.Yaw = m_currentRotationSpeed * DeltaTime;
+	AddActorLocalRotation(DeltaRotation);
 }
 
 // Called to bind functionality to input
@@ -71,7 +75,7 @@ void ASpaceshipPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ASpaceshipPawn::MoveForwardInput(float value)
 {
 	if (!FMath::IsNearlyEqual(value, 0.0f))
-		m_currentForwardSpeed = value * 250.0f;
+		m_currentForwardSpeed = value * ForwardSpeed;
 	else
 		m_currentForwardSpeed = 0.0f;
 }
@@ -79,17 +83,19 @@ void ASpaceshipPawn::MoveForwardInput(float value)
 void ASpaceshipPawn::MoveRightInput(float value)
 {
 	if (!FMath::IsNearlyEqual(value, 0.0f))
-		m_currentRotationSpeed = value * 250.0f;
+		m_currentRotationSpeed = value * TurnSpeed;
 	else
 		m_currentRotationSpeed = 0.0f;
 }
 
 void ASpaceshipPawn::FireInput(float value)
 {
-	if (FMath::IsNearlyEqual(value, 0.0f))
+	if (!FMath::IsNearlyEqual(value, 0.0f))
 		m_currentFire = value;
 	else
 		m_currentFire = 0.0f;
+
+	
 }
 
 void ASpaceshipPawn::ShotTimerExpired()

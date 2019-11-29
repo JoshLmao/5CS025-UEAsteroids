@@ -31,6 +31,12 @@ public:
 	void FireInput(float value);
 
 private:
+	UPROPERTY(EditAnywhere)
+	float TurnSpeed = 250.0f;
+
+	UPROPERTY(EditAnywhere)
+	float ForwardSpeed = 250.0f;
+
 	float m_currentForwardSpeed;
 	float m_currentRotationSpeed;
 	float m_currentFire;
@@ -39,12 +45,7 @@ private:
 	float m_fireRate;
 	float m_gunOffset;
 
-	UPROPERTY(EditAnywhere)
-	class UStaticMesh* m_shipModel;
-
-	UPROPERTY(EditAnywhere)
 	class USoundBase* m_fireSound;
-
 	class UStaticMeshComponent* m_shipMeshComponent;
 
 	FTimerHandle TimerHandle_ShotTimerExpired;
