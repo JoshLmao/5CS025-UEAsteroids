@@ -22,7 +22,7 @@ void AHyperoidsGameModeBase::StartPlay()
 		FActorSpawnParameters params;
 		params.Name = TEXT("Asteroid " + i);
 		AActor* asteroid = world->SpawnActor(basicAsteroid, NULL, params);
-
+		
 		m_asteroids.Add(asteroid);
 	}
 }

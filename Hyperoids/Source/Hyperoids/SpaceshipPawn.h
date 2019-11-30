@@ -30,6 +30,12 @@ public:
 	void MoveRightInput(float value);
 	void FireInput(float value);
 
+	UFUNCTION()
+	void OnOverlap(AActor* overlappedActor, AActor* otherActor);
+
+	UFUNCTION()
+	void OnEndOverlap(AActor* overlappedActor, AActor* otherActor);
+
 private:
 	UPROPERTY(EditAnywhere)
 	float TurnSpeed = 500.0f;
@@ -44,6 +50,7 @@ private:
 	float m_currentRotationSpeed;
 	float m_currentFire;
 
+	bool bEdgeOfWorld;
 	bool m_bCanFire;
 	float m_fireRate;
 	float m_gunOffset;

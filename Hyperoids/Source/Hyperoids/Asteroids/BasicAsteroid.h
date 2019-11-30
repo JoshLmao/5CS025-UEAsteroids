@@ -15,8 +15,6 @@ public:
 	// Sets default values for this actor's properties
 	ABasicAsteroid();
 
-	float RotationAmount;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -28,18 +26,20 @@ protected:
 	void OnEndOverlap(AActor* overlappedActor, AActor* otherActor);
 
 public:	
+	static const FName ASTEROID_TAG;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	// Current location of the Asteroid
 	FVector m_location;
+	// Is the asteroid at the edge of the world (screen)
 	bool bEdgeOfWorld;
-
-	UPROPERTY(EditAnywhere)
+	// Amount of rotation to apply to the asteroid
+	float m_rotationAmount;
+	// Direction the asteroid will move
 	FVector m_movementDirection;
-
-	UPROPERTY(EditAnywhere)
-	float m_rotationValue;
 
 	FVector GetRndVectorInBoundary(float maxX, float maxY);
 };

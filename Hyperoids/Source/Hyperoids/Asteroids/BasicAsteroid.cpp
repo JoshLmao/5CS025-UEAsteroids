@@ -7,6 +7,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
+const FName ABasicAsteroid::ASTEROID_TAG = FName("asteroid");
+
 // Sets default values
 ABasicAsteroid::ABasicAsteroid()
 {
@@ -32,6 +34,12 @@ ABasicAsteroid::ABasicAsteroid()
 
 	OnActorBeginOverlap.AddDynamic(this, &ABasicAsteroid::OnOverlap);
 	OnActorEndOverlap.AddDynamic(this, &ABasicAsteroid::OnEndOverlap);
+
+	m_movementDirection = FVector(FMath::RandRange(-400.0f, 400.0f), FMath::RandRange(-400.0f, 400.0f), 0.0f);
+	m_rotationAmount = FMath::RandRange(-350.0f, 450.0f);
+
+	// Set the tag for all asteroids as a way to identify collisions
+	this->Tags.Add(ASTEROID_TAG);
 }
 
 // Called when the game starts or when spawned
@@ -50,7 +58,7 @@ void ABasicAsteroid::Tick(float DeltaTime)
 	m_location = GetActorLocation();
 
 	float maxX = 1000.0f;
-	float maxY = 1000.0f;
+	float maxY = 1900.0f;
 	if (m_location.X < -maxX)
 	{
 		m_location.X = maxX;
@@ -75,14 +83,18 @@ void ABasicAsteroid::Tick(float DeltaTime)
 	
 	SetActorLocation((m_location + m_movementDirection * DeltaTime), !bEdgeOfWorld);
 
+	if (bEdgeOfWorld)
+		bEdgeOfWorld = false;
+
 	FRotator actorRotation = GetActorRotation();
-	actorRotation.Roll += RotationAmount * DeltaTime;
+	actorRotation.Roll += m_rotationAmount * DeltaTime;
+
 	SetActorRotation(actorRotation);
 }
 
 void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 {
-	
+	UE_LOG(LogTemp, Log, TEXT("Tag: %d Name: %s"), overlappedActor->Tags.Num(), *overlappedActor->GetName());
 }
 
 void ABasicAsteroid::OnEndOverlap(AActor* overlappedActor, AActor* otherActor)

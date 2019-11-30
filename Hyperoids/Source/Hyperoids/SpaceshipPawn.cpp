@@ -8,6 +8,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/CollisionProfile.h"
 #include "GameFramework/PlayerController.h"
+#include "Asteroids/BasicAsteroid.h"
 
 // Sets default values
 ASpaceshipPawn::ASpaceshipPawn()
@@ -41,6 +42,9 @@ ASpaceshipPawn::ASpaceshipPawn()
 	static ConstructorHelpers::FObjectFinder<USoundBase> FireAudio(TEXT("SoundWave'/Game/TwinStick/Audio/TwinStickFire.TwinStickFire'"));
 	if (FireAudio.Succeeded())
 		m_fireSound = FireAudio.Object;
+
+	OnActorBeginOverlap.AddDynamic(this, &ASpaceshipPawn::OnOverlap);
+	OnActorEndOverlap.AddDynamic(this, &ASpaceshipPawn::OnEndOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -114,33 +118,48 @@ void ASpaceshipPawn::BoundaryCheck(float deltaTime)
 	//FVector2D screenLocation = FVector2D::ZeroVector;
 	//player->ProjectWorldLocationToScreen(playerLoc, screenLocation);
 
-	bool bMovedPlayer = false;
-	double maxX = 1500.0f;
-	double maxY = 1500.0f;
-
+	float maxX = 1000.0f;
+	float maxY = 1900.0f;
 	// Validate X is within boundary of play area
 	if (playerLoc.X < -maxX)
 	{
 		playerLoc.X = maxX;
-		bMovedPlayer = true;
+		bEdgeOfWorld = true;
 	}
 	if (playerLoc.X > maxX)
 	{
 		playerLoc.X = -maxX;
-		bMovedPlayer = true;
+		bEdgeOfWorld = true;
 	}
 
 	// Validate Y is within boundary of play area
 	if (playerLoc.Y < -maxY)
 	{
 		playerLoc.Y = maxY;
-		bMovedPlayer = true;
+		bEdgeOfWorld = true;
 	}
 	if (playerLoc.Y > maxY)
 	{
 		playerLoc.Y = -maxY;
-		bMovedPlayer = true;
+		bEdgeOfWorld = true;
 	}
 
-	SetActorLocation(playerLoc + MovementDirection * deltaTime, !bMovedPlayer);
+	SetActorLocation(playerLoc + MovementDirection * deltaTime, !bEdgeOfWorld);
+}
+
+void ASpaceshipPawn::OnOverlap(AActor* overlappedActor, AActor* otherActor)
+{
+	FName tag = "";
+	if (otherActor->Tags.Num() > 0)
+		tag = otherActor->Tags[0];
+
+	if (tag == ABasicAsteroid::ASTEROID_TAG)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player has died!"));
+	}
+}
+
+void ASpaceshipPawn::OnEndOverlap(AActor* overlappedActor, AActor* otherActor)
+{
+
 }
