@@ -32,10 +32,13 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere)
-	float TurnSpeed = 250.0f;
+	float TurnSpeed = 500.0f;
 
 	UPROPERTY(EditAnywhere)
-	float ForwardSpeed = 250.0f;
+	float ForwardSpeed = 500.0f;
+
+	UPROPERTY(EditAnywhere)
+	FVector MovementDirection = FVector::ZeroVector;
 
 	float m_currentForwardSpeed;
 	float m_currentRotationSpeed;
@@ -51,4 +54,5 @@ private:
 	FTimerHandle TimerHandle_ShotTimerExpired;
 
 	void ShotTimerExpired();
+	void BoundaryCheck(float deltaTime);
 };

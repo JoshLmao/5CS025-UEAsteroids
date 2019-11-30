@@ -15,6 +15,8 @@ public:
 	// Sets default values for this actor's properties
 	ABasicAsteroid();
 
+	float RotationAmount;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,6 +32,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	FVector m_location;
+	bool bEdgeOfWorld;
+
 	UPROPERTY(EditAnywhere)
-	class UStaticMesh* m_asteroidMesh;
+	FVector m_movementDirection;
+
+	UPROPERTY(EditAnywhere)
+	float m_rotationValue;
+
+	FVector GetRndVectorInBoundary(float maxX, float maxY);
 };

@@ -7,6 +7,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/CollisionProfile.h"
+#include "GameFramework/PlayerController.h"
 
 // Sets default values
 ASpaceshipPawn::ASpaceshipPawn()
@@ -46,7 +47,7 @@ ASpaceshipPawn::ASpaceshipPawn()
 void ASpaceshipPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -60,6 +61,8 @@ void ASpaceshipPawn::Tick(float DeltaTime)
 	FRotator DeltaRotation(0, 0, 0);
 	DeltaRotation.Yaw = m_currentRotationSpeed * DeltaTime;
 	AddActorLocalRotation(DeltaRotation);
+
+	BoundaryCheck(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -94,11 +97,50 @@ void ASpaceshipPawn::FireInput(float value)
 		m_currentFire = value;
 	else
 		m_currentFire = 0.0f;
-
-	
 }
 
 void ASpaceshipPawn::ShotTimerExpired()
 {
 	m_bCanFire = true;
+}
+
+void ASpaceshipPawn::BoundaryCheck(float deltaTime)
+{
+	FVector playerLoc = GetActorLocation();
+
+	// Works out if the world location is inside screen space location
+	//UWorld* world = GetWorld();
+	//APlayerController* player = world->GetFirstPlayerController();
+	//FVector2D screenLocation = FVector2D::ZeroVector;
+	//player->ProjectWorldLocationToScreen(playerLoc, screenLocation);
+
+	bool bMovedPlayer = false;
+	double maxX = 1500.0f;
+	double maxY = 1500.0f;
+
+	// Validate X is within boundary of play area
+	if (playerLoc.X < -maxX)
+	{
+		playerLoc.X = maxX;
+		bMovedPlayer = true;
+	}
+	if (playerLoc.X > maxX)
+	{
+		playerLoc.X = -maxX;
+		bMovedPlayer = true;
+	}
+
+	// Validate Y is within boundary of play area
+	if (playerLoc.Y < -maxY)
+	{
+		playerLoc.Y = maxY;
+		bMovedPlayer = true;
+	}
+	if (playerLoc.Y > maxY)
+	{
+		playerLoc.Y = -maxY;
+		bMovedPlayer = true;
+	}
+
+	SetActorLocation(playerLoc + MovementDirection * deltaTime, !bMovedPlayer);
 }

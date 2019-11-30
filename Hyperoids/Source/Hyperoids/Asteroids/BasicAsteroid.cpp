@@ -24,8 +24,9 @@ ABasicAsteroid::ABasicAsteroid()
 	UStaticMeshComponent* asteroidComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AsteroidMesh"));
 	asteroidComponent->SetupAttachment(RootComponent);
 
-	if (m_asteroidMesh != NULL)
-		asteroidComponent->SetStaticMesh(m_asteroidMesh);
+	ConstructorHelpers::FObjectFinder<UStaticMesh> AsteroidMesh(TEXT("StaticMesh'/Game/ExampleContent/Landscapes/Meshes/SM_Rock.SM_Rock'"));
+	if (AsteroidMesh.Succeeded())
+		asteroidComponent->SetStaticMesh(AsteroidMesh.Object);
 	else 
 		UE_LOG(LogTemp, Warning, TEXT("No Mesh set for BasicAsteroid. Won't have any"));
 
@@ -38,6 +39,7 @@ void ABasicAsteroid::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SetActorLocation(GetRndVectorInBoundary(1000.0f, 1000.0f));
 }
 
 // Called every frame
@@ -45,6 +47,37 @@ void ABasicAsteroid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	m_location = GetActorLocation();
+
+	float maxX = 1000.0f;
+	float maxY = 1000.0f;
+	if (m_location.X < -maxX)
+	{
+		m_location.X = maxX;
+		bEdgeOfWorld = true;
+	}
+	if (m_location.X > maxX)
+	{
+		m_location.X = -maxX;
+		bEdgeOfWorld = true;
+	}
+
+	if (m_location.Y < -maxY)
+	{
+		m_location.Y = maxY;
+		bEdgeOfWorld = true;
+	}
+	if (m_location.Y > maxY)
+	{
+		m_location.Y = -maxY;
+		bEdgeOfWorld = true;
+	}
+	
+	SetActorLocation((m_location + m_movementDirection * DeltaTime), !bEdgeOfWorld);
+
+	FRotator actorRotation = GetActorRotation();
+	actorRotation.Roll += RotationAmount * DeltaTime;
+	SetActorRotation(actorRotation);
 }
 
 void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
@@ -55,4 +88,13 @@ void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 void ABasicAsteroid::OnEndOverlap(AActor* overlappedActor, AActor* otherActor)
 {
 
+}
+
+FVector ABasicAsteroid::GetRndVectorInBoundary(float maxX, float maxY)
+{
+	FVector position;
+	position.X = FMath::RandRange(-maxX, maxX);
+	position.Y = FMath::RandRange(-maxY, maxY);
+	position.Z = 0.0f;
+	return position;
 }
