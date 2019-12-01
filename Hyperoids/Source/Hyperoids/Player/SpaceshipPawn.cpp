@@ -8,6 +8,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/CollisionProfile.h"
 #include "GameFramework/PlayerController.h"
+#include "Engine/EngineTypes.h"
 
 #include "Asteroids/BasicAsteroid.h"
 #include "HyperoidsGameModeBase.h"
@@ -42,6 +43,9 @@ ASpaceshipPawn::ASpaceshipPawn()
 	m_bCanFire = true;
 	m_fireRate = 1.0f;
 	m_gunOffset = 70.0f;
+	
+	m_projectileWaitSeconds = 1.0f; // in seconds
+	m_projectileTimer = 0.0f;
 
 	static ConstructorHelpers::FObjectFinder<USoundBase> FireAudio(TEXT("SoundWave'/Game/TwinStick/Audio/TwinStickFire.TwinStickFire'"));
 	if (FireAudio.Succeeded())
@@ -55,6 +59,12 @@ ASpaceshipPawn::ASpaceshipPawn()
 void ASpaceshipPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+}
+
+void ASpaceshipPawn::EndPlay(const EEndPlayReason::Type endPlayReason)
+{
+	Super::EndPlay(endPlayReason);
 
 }
 
@@ -75,6 +85,16 @@ void ASpaceshipPawn::Tick(float DeltaTime)
 	if (m_currentFire > 0.0f && m_bCanFire)
 	{
 		FireProjectile();
+	}
+
+	if (!m_bCanFire)
+	{
+		m_projectileTimer += DeltaTime;
+		if (m_projectileTimer >= m_projectileWaitSeconds)
+		{
+			m_bCanFire = true;
+			m_projectileTimer = 0.0f;
+		}
 	}
 }
 
@@ -187,3 +207,4 @@ void ASpaceshipPawn::FireProjectile()
 	projectile->SetMovementDirection(forward * m_projectileSpeed);
 	UE_LOG(LogTemp, Log, TEXT("Forward direction: %s"), *projectile->GetActorLocation().ToString());
 }
+

@@ -26,6 +26,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void EndPlay(const EEndPlayReason::Type endPlayReason) override;
+
 	void MoveForwardInput(float value);
 	void MoveRightInput(float value);
 	void FireInput(float value);
@@ -57,10 +59,17 @@ private:
 	float m_currentRotationSpeed;
 	float m_currentFire;
 
+	// Has the player reached the edge of our world/play area
 	bool bEdgeOfWorld;
+	// Can the player fire a projectile
 	bool m_bCanFire;
 	float m_fireRate;
+	// Amount of units to spawn the projectile from the player's ship
 	float m_gunOffset;
+	// Amount of seconds to wait unbetween shooting projectiles
+	float m_projectileWaitSeconds;
+	// Current cooldown time between shooting projectiles
+	float m_projectileTimer;
 
 	class USoundBase* m_fireSound;
 	class UStaticMeshComponent* m_shipMeshComponent;
