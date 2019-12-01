@@ -28,7 +28,7 @@ ASpaceshipPawn::ASpaceshipPawn()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No Mesh has been set for the player!"));
+		UE_LOG(LogTemp, Error, TEXT("No Mesh has been set for the player!"));
 	}
 
 	m_currentForwardSpeed = 0.0f;

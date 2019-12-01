@@ -3,7 +3,7 @@
 
 #include "HyperoidsGameModeBase.h"
 
-#include "SpaceshipPawn.h"
+#include "Player/SpaceshipPawn.h"
 #include "Engine/World.h"
 
 AHyperoidsGameModeBase::AHyperoidsGameModeBase()

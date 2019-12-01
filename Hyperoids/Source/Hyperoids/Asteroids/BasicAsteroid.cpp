@@ -16,30 +16,40 @@ ABasicAsteroid::ABasicAsteroid()
 	PrimaryActorTick.bCanEverTick = true;
 
 	UCapsuleComponent* capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("RootComponent"));
-
 	RootComponent = capsuleComponent;
-
-	capsuleComponent->SetCapsuleRadius(100.0f);
-	capsuleComponent->SetCapsuleHalfHeight(150.0f);
-	capsuleComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
 	UStaticMeshComponent* asteroidComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AsteroidMesh"));
 	asteroidComponent->SetupAttachment(RootComponent);
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> AsteroidMesh(TEXT("StaticMesh'/Game/ExampleContent/Landscapes/Meshes/SM_Rock.SM_Rock'"));
 	if (AsteroidMesh.Succeeded())
+	{
 		asteroidComponent->SetStaticMesh(AsteroidMesh.Object);
-	else 
-		UE_LOG(LogTemp, Warning, TEXT("No Mesh set for BasicAsteroid. Won't have any"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Mesh set for BasicAsteroid!"));
+	}
 
-	OnActorBeginOverlap.AddDynamic(this, &ABasicAsteroid::OnOverlap);
-	OnActorEndOverlap.AddDynamic(this, &ABasicAsteroid::OnEndOverlap);
-
+	// Set random movement & rotation
 	m_movementDirection = FVector(FMath::RandRange(-400.0f, 400.0f), FMath::RandRange(-400.0f, 400.0f), 0.0f);
 	m_rotationAmount = FMath::RandRange(-350.0f, 450.0f);
 
+	// Give a random scale to asteroid
+	float minScale = 1.0f;
+	float maxScale = 6.0f;
+	FVector scale = FVector(FMath::RandRange(minScale, maxScale), FMath::RandRange(minScale, maxScale), FMath::RandRange(minScale, maxScale));
+	SetActorScale3D(scale);
+
+	// Configure collider
+	SetColliderSize(30.0f);
+	capsuleComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+
 	// Set the tag for all asteroids as a way to identify collisions
 	this->Tags.Add(ASTEROID_TAG);
+
+	OnActorBeginOverlap.AddDynamic(this, &ABasicAsteroid::OnOverlap);
+	OnActorEndOverlap.AddDynamic(this, &ABasicAsteroid::OnEndOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -94,7 +104,7 @@ void ABasicAsteroid::Tick(float DeltaTime)
 
 void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 {
-	UE_LOG(LogTemp, Log, TEXT("Tag: %d Name: %s"), overlappedActor->Tags.Num(), *overlappedActor->GetName());
+	//UE_LOG(LogTemp, Log, TEXT("Tag: %d Name: %s"), overlappedActor->Tags.Num(), *overlappedActor->GetName());
 }
 
 void ABasicAsteroid::OnEndOverlap(AActor* overlappedActor, AActor* otherActor)
@@ -109,4 +119,13 @@ FVector ABasicAsteroid::GetRndVectorInBoundary(float maxX, float maxY)
 	position.Y = FMath::RandRange(-maxY, maxY);
 	position.Z = 0.0f;
 	return position;
+}
+
+void ABasicAsteroid::SetColliderSize(float size)
+{
+	m_colliderSize = size;
+
+	UCapsuleComponent* capsule = (UCapsuleComponent*)GetComponentByClass(UCapsuleComponent::StaticClass());
+	capsule->SetCapsuleHalfHeight(m_colliderSize);
+	capsule->SetCapsuleRadius(m_colliderSize);
 }

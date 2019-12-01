@@ -30,7 +30,6 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 private:
 	// Current location of the Asteroid
 	FVector m_location;
@@ -40,6 +39,10 @@ private:
 	float m_rotationAmount;
 	// Direction the asteroid will move
 	FVector m_movementDirection;
+	// Size of capsule collider for asteroid
+	float m_colliderSize;
 
 	FVector GetRndVectorInBoundary(float maxX, float maxY);
+
+	void SetColliderSize(float size);
 };
