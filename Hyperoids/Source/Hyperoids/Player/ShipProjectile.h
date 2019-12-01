@@ -19,8 +19,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void OnOverlap(AActor* overlappedActor, AActor* otherActor);
+
+	UFUNCTION()
+	void OnEndOverlap(AActor* overlappedActor, AActor* otherActor);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void SetMovementDirection(FVector moveDir);
+
+private:
+	FVector m_movementDirection;
 };

@@ -37,14 +37,21 @@ public:
 	void OnEndOverlap(AActor* overlappedActor, AActor* otherActor);
 
 private:
+	// Speed at which the player turns themselves
 	UPROPERTY(EditAnywhere)
 	float TurnSpeed = 500.0f;
 
+	// Speed at which the player moves forward
 	UPROPERTY(EditAnywhere)
 	float ForwardSpeed = 500.0f;
 
+	// Current movement direction of the player
 	UPROPERTY(EditAnywhere)
 	FVector MovementDirection = FVector::ZeroVector;
+
+	// Speed of the projectile shot from the player
+	UPROPERTY(EditAnywhere)
+	float m_projectileSpeed;
 
 	float m_currentForwardSpeed;
 	float m_currentRotationSpeed;
@@ -62,4 +69,5 @@ private:
 
 	void ShotTimerExpired();
 	void BoundaryCheck(float deltaTime);
+	void FireProjectile();
 };

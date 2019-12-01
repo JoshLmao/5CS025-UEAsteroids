@@ -8,7 +8,10 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/CollisionProfile.h"
 #include "GameFramework/PlayerController.h"
+
 #include "Asteroids/BasicAsteroid.h"
+#include "HyperoidsGameModeBase.h"
+#include "Player\ShipProjectile.h"
 
 // Sets default values
 ASpaceshipPawn::ASpaceshipPawn()
@@ -34,6 +37,7 @@ ASpaceshipPawn::ASpaceshipPawn()
 	m_currentForwardSpeed = 0.0f;
 	m_currentRotationSpeed = 0.0f;
 	m_currentFire = 0.0f;
+	m_projectileSpeed = 750.0f;
 
 	m_bCanFire = true;
 	m_fireRate = 1.0f;
@@ -67,6 +71,11 @@ void ASpaceshipPawn::Tick(float DeltaTime)
 	AddActorLocalRotation(DeltaRotation);
 
 	BoundaryCheck(DeltaTime);
+
+	if (m_currentFire > 0.0f && m_bCanFire)
+	{
+		FireProjectile();
+	}
 }
 
 // Called to bind functionality to input
@@ -113,34 +122,31 @@ void ASpaceshipPawn::BoundaryCheck(float deltaTime)
 	FVector playerLoc = GetActorLocation();
 
 	// Works out if the world location is inside screen space location
-	//UWorld* world = GetWorld();
-	//APlayerController* player = world->GetFirstPlayerController();
-	//FVector2D screenLocation = FVector2D::ZeroVector;
-	//player->ProjectWorldLocationToScreen(playerLoc, screenLocation);
+	UWorld* world = GetWorld();
+	AHyperoidsGameModeBase* gm = (AHyperoidsGameModeBase*)world->GetAuthGameMode();
+	FVector2D playArea = gm->GetPlayArea();
 
-	float maxX = 1000.0f;
-	float maxY = 1900.0f;
 	// Validate X is within boundary of play area
-	if (playerLoc.X < -maxX)
+	if (playerLoc.X < -playArea.X)
 	{
-		playerLoc.X = maxX;
+		playerLoc.X = playArea.X;
 		bEdgeOfWorld = true;
 	}
-	if (playerLoc.X > maxX)
+	if (playerLoc.X > playArea.X)
 	{
-		playerLoc.X = -maxX;
+		playerLoc.X = -playArea.X;
 		bEdgeOfWorld = true;
 	}
 
 	// Validate Y is within boundary of play area
-	if (playerLoc.Y < -maxY)
+	if (playerLoc.Y < -playArea.Y)
 	{
-		playerLoc.Y = maxY;
+		playerLoc.Y = playArea.Y;
 		bEdgeOfWorld = true;
 	}
-	if (playerLoc.Y > maxY)
+	if (playerLoc.Y > playArea.Y)
 	{
-		playerLoc.Y = -maxY;
+		playerLoc.Y = -playArea.Y;
 		bEdgeOfWorld = true;
 	}
 
@@ -162,4 +168,22 @@ void ASpaceshipPawn::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 void ASpaceshipPawn::OnEndOverlap(AActor* overlappedActor, AActor* otherActor)
 {
 
+}
+
+void ASpaceshipPawn::FireProjectile()
+{
+	m_bCanFire = false;
+	
+	UWorld* world = GetWorld();
+	const FVector loc = GetActorLocation();
+	const FRotator rot = GetActorRotation();
+	// Spawn projectile infront of ship with it's position & rotation
+	AShipProjectile* projectile = (AShipProjectile*)world->SpawnActor<AShipProjectile>(AShipProjectile::StaticClass(), loc, rot);
+	// Add offset to projectile so to now spawn inside player
+	projectile->AddActorLocalOffset(FVector(m_gunOffset, 0.0f, 0.0f));
+
+	// Set movement vector to be forward position of player
+	FVector forward = GetActorForwardVector();
+	projectile->SetMovementDirection(forward * m_projectileSpeed);
+	UE_LOG(LogTemp, Log, TEXT("Forward direction: %s"), *projectile->GetActorLocation().ToString());
 }

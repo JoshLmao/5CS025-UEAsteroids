@@ -6,6 +6,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Engine/World.h"
+
+#include "HyperoidsGameModeBase.h"
 
 const FName ABasicAsteroid::ASTEROID_TAG = FName("asteroid");
 
@@ -67,27 +70,27 @@ void ABasicAsteroid::Tick(float DeltaTime)
 
 	m_location = GetActorLocation();
 
-	float maxX = 1000.0f;
-	float maxY = 1900.0f;
-	if (m_location.X < -maxX)
+	AHyperoidsGameModeBase* gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();
+	FVector2D playArea = gm->GetPlayArea();
+	if (m_location.X < -playArea.X)
 	{
-		m_location.X = maxX;
+		m_location.X = playArea.X;
 		bEdgeOfWorld = true;
 	}
-	if (m_location.X > maxX)
+	if (m_location.X > playArea.X)
 	{
-		m_location.X = -maxX;
+		m_location.X = -playArea.X;
 		bEdgeOfWorld = true;
 	}
 
-	if (m_location.Y < -maxY)
+	if (m_location.Y < -playArea.Y)
 	{
-		m_location.Y = maxY;
+		m_location.Y = playArea.Y;
 		bEdgeOfWorld = true;
 	}
-	if (m_location.Y > maxY)
+	if (m_location.Y > playArea.Y)
 	{
-		m_location.Y = -maxY;
+		m_location.Y = -playArea.Y;
 		bEdgeOfWorld = true;
 	}
 	

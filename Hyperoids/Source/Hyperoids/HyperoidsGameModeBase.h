@@ -20,8 +20,13 @@ class HYPEROIDS_API AHyperoidsGameModeBase : public AGameModeBase
 public:
 	AHyperoidsGameModeBase();
 
+	/* Gets the size of the current play area. FVector2D returns top-most & right-most vector*/
+	FVector2D GetPlayArea();
+
 private:
 	TArray<AActor*> m_asteroids;
+
+	FVector2D m_playArea;
 
 	virtual void StartPlay() override;
 };

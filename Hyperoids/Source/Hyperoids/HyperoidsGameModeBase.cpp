@@ -9,6 +9,8 @@
 AHyperoidsGameModeBase::AHyperoidsGameModeBase()
 {
 	DefaultPawnClass = ASpaceshipPawn::StaticClass();
+
+	m_playArea = FVector2D(1000.0f, 1900.0f);
 }
 
 void AHyperoidsGameModeBase::StartPlay()
@@ -25,4 +27,9 @@ void AHyperoidsGameModeBase::StartPlay()
 		
 		m_asteroids.Add(asteroid);
 	}
+}
+
+FVector2D AHyperoidsGameModeBase::GetPlayArea()
+{
+	return m_playArea;
 }
