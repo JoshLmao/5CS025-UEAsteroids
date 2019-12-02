@@ -11,22 +11,18 @@
 #include "Asteroids\BasicAsteroid.h"
 #include "HyperoidsGameModeBase.h"
 
+const FName AShipProjectile::PROJECTILE_TAG = TEXT("projectile");
+
 // Sets default values
 AShipProjectile::AShipProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//UCapsuleComponent* capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("RootComponent"));
-	//RootComponent = capsule;
-
-	//capsule->SetCapsuleRadius(1.0f);
-	//capsule->SetCapsuleHalfHeight(1.0f);
-	//capsule->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
-
 	// Set projectile mesh
 	UStaticMeshComponent* meshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
-	meshComponent->SetCollisionProfileName(UCollisionProfile::DefaultProjectile_ProfileName);
+	meshComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	meshComponent->SetGenerateOverlapEvents(true);
 	RootComponent = meshComponent;
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> ProjectileMesh(TEXT("StaticMesh'/Game/TwinStick/Meshes/TwinStickProjectile.TwinStickProjectile'"));
@@ -38,6 +34,8 @@ AShipProjectile::AShipProjectile()
 	{
 		UE_LOG(LogTemp, Error, TEXT("No mesh found for Projectile!"));
 	}
+
+	this->Tags.Add(PROJECTILE_TAG);
 
 	// Add Overlap listeners to detect when hitting asteroid
 	OnActorBeginOverlap.AddDynamic(this, &AShipProjectile::OnOverlap);
@@ -77,14 +75,13 @@ void AShipProjectile::Tick(float DeltaTime)
 
 void AShipProjectile::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 {
-	FName tag = TEXT("");
-	if (overlappedActor->Tags.Num() > 0)
-		tag = overlappedActor->Tags[0];
+	FName tag;
+	if (otherActor->Tags.Num() > 0)
+		tag = otherActor->Tags[0];
 
 	if (tag == ABasicAsteroid::ASTEROID_TAG)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Projectile collided with Asteroid - Blow asteroid up"));
-
 		this->Destroy();
 	}
 }

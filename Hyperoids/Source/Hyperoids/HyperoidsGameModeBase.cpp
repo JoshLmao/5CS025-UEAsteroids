@@ -5,6 +5,9 @@
 
 #include "Player/SpaceshipPawn.h"
 #include "Engine/World.h"
+#include "Engine/Public/TimerManager.h"
+
+const int AHyperoidsGameModeBase::MAX_ASTEROIDS = 15;
 
 AHyperoidsGameModeBase::AHyperoidsGameModeBase()
 {
@@ -17,19 +20,50 @@ void AHyperoidsGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
-	UWorld* world = GetWorld();
-	for (int i = 0; i < 4; i++) {
-		UClass* basicAsteroid = ABasicAsteroid::StaticClass();
+	// Spawn Asteroids on first launch
+	SpawnAsteroids();
 
-		FActorSpawnParameters params;
-		params.Name = TEXT("Asteroid " + i);
-		AActor* asteroid = world->SpawnActor(basicAsteroid, NULL, params);
-		
-		m_asteroids.Add(asteroid);
+	// SetTimer to trigger spawning new asteroids every X seconds
+	if (!SpawnHandle_CreateAsteroids.IsValid())
+	{
+		float delaySeconds = 15.0f;
+		GetWorldTimerManager().SetTimer(SpawnHandle_CreateAsteroids, this, &AHyperoidsGameModeBase::SpawnAsteroids, delaySeconds, true);
 	}
 }
 
 FVector2D AHyperoidsGameModeBase::GetPlayArea()
 {
 	return m_playArea;
+}
+
+void AHyperoidsGameModeBase::SpawnAsteroids()
+{
+	if (m_asteroids.Num() >= MAX_ASTEROIDS)
+	{
+		// Don't spawn any more asteroids until others are destroyed
+		return;
+	}
+
+	int amountToSpawn = FMath::RandRange(3, 6);
+	UWorld* world = GetWorld();
+	for (int i = 0; i < amountToSpawn; i++) 
+	{
+		const FVector randLocation = FVector();
+		const FRotator randRotation = FRotator();
+		ABasicAsteroid* asteroid = world->SpawnActor<ABasicAsteroid>(ABasicAsteroid::StaticClass(), randLocation, randRotation);
+		asteroid->SetRandomDirections();
+
+		//Give random location on initial spawn
+		asteroid->SetRandomLocation();
+
+		// Give a random scale to asteroid
+		float minScale = 1.0f;
+		float maxScale = 6.0f;
+		FVector scale = FVector(FMath::RandRange(minScale, maxScale), FMath::RandRange(minScale, maxScale), FMath::RandRange(minScale, maxScale));
+		asteroid->SetActorScale3D(scale);
+
+		m_asteroids.Add(asteroid);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Spawned '%d' asteroids"), amountToSpawn)
 }

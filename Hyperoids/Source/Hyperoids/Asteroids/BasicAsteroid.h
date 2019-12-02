@@ -30,6 +30,14 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	// Gives the asteroid a random movement direction and random rotation
+	void SetRandomDirections();
+
+	void SetMovementDirection(const FVector direction);
+	void SetRandomLocation();
+
+	void SetAsChildAsteroid();
+
 private:
 	// Current location of the Asteroid
 	FVector m_location;
@@ -41,8 +49,12 @@ private:
 	FVector m_movementDirection;
 	// Size of capsule collider for asteroid
 	float m_colliderSize;
+	bool m_bIsChildAsteroid;
 
 	FVector GetRndVectorInBoundary(float maxX, float maxY);
 
+	// Sets the overall size of the collider for this asteroid
 	void SetColliderSize(float size);
+	// Spawns the amount of child asteroids from the asteroid location
+	void SpawnChildAsteroids(int amount);
 };

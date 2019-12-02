@@ -38,7 +38,7 @@ ASpaceshipPawn::ASpaceshipPawn()
 	m_currentForwardSpeed = 0.0f;
 	m_currentRotationSpeed = 0.0f;
 	m_currentFire = 0.0f;
-	m_projectileSpeed = 750.0f;
+	m_projectileSpeed = 1000.0f;
 
 	m_bCanFire = true;
 	m_fireRate = 1.0f;
@@ -205,6 +205,5 @@ void ASpaceshipPawn::FireProjectile()
 	// Set movement vector to be forward position of player
 	FVector forward = GetActorForwardVector();
 	projectile->SetMovementDirection(forward * m_projectileSpeed);
-	UE_LOG(LogTemp, Log, TEXT("Forward direction: %s"), *projectile->GetActorLocation().ToString());
 }
 

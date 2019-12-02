@@ -9,6 +9,7 @@
 #include "Engine/World.h"
 
 #include "HyperoidsGameModeBase.h"
+#include "Player\ShipProjectile.h"
 
 const FName ABasicAsteroid::ASTEROID_TAG = FName("asteroid");
 
@@ -18,8 +19,14 @@ ABasicAsteroid::ABasicAsteroid()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	m_bIsChildAsteroid = false;
+
 	UCapsuleComponent* capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("RootComponent"));
 	RootComponent = capsuleComponent;
+	// Configure collider
+	m_colliderSize = 30.0f;
+	capsuleComponent->SetCapsuleRadius(m_colliderSize);
+	capsuleComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
 	UStaticMeshComponent* asteroidComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AsteroidMesh"));
 	asteroidComponent->SetupAttachment(RootComponent);
@@ -34,20 +41,6 @@ ABasicAsteroid::ABasicAsteroid()
 		UE_LOG(LogTemp, Error, TEXT("No Mesh set for BasicAsteroid!"));
 	}
 
-	// Set random movement & rotation
-	m_movementDirection = FVector(FMath::RandRange(-400.0f, 400.0f), FMath::RandRange(-400.0f, 400.0f), 0.0f);
-	m_rotationAmount = FMath::RandRange(-350.0f, 450.0f);
-
-	// Give a random scale to asteroid
-	float minScale = 1.0f;
-	float maxScale = 6.0f;
-	FVector scale = FVector(FMath::RandRange(minScale, maxScale), FMath::RandRange(minScale, maxScale), FMath::RandRange(minScale, maxScale));
-	SetActorScale3D(scale);
-
-	// Configure collider
-	SetColliderSize(30.0f);
-	capsuleComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
-
 	// Set the tag for all asteroids as a way to identify collisions
 	this->Tags.Add(ASTEROID_TAG);
 
@@ -59,8 +52,6 @@ ABasicAsteroid::ABasicAsteroid()
 void ABasicAsteroid::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	SetActorLocation(GetRndVectorInBoundary(1000.0f, 1000.0f));
 }
 
 // Called every frame
@@ -107,12 +98,80 @@ void ABasicAsteroid::Tick(float DeltaTime)
 
 void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 {
-	//UE_LOG(LogTemp, Log, TEXT("Tag: %d Name: %s"), overlappedActor->Tags.Num(), *overlappedActor->GetName());
+	//UE_LOG(LogTemp, Log, TEXT("Asteroid '%s' hit by '%s'"), *overlappedActor->GetName(), *otherActor->GetName());
+
+	FName tag;
+	if (otherActor->Tags.Num() > 0)
+		tag = otherActor->Tags[0];
+
+	if (tag == AShipProjectile::PROJECTILE_TAG)
+	{
+		// Spawn Asteroids if not a child asteroid
+		if (!m_bIsChildAsteroid)
+		{
+			int childAsteroidAmt = FMath::RandRange(2, 4);
+			SpawnChildAsteroids(childAsteroidAmt);
+			UE_LOG(LogTemp, Log, TEXT("Created '%d' child asteroids"), childAsteroidAmt);
+		}
+
+		// Finally destroy once done
+		Destroy();
+	}
 }
 
 void ABasicAsteroid::OnEndOverlap(AActor* overlappedActor, AActor* otherActor)
 {
 
+}
+
+void ABasicAsteroid::SetColliderSize(float size)
+{
+	m_colliderSize = size;
+
+	UCapsuleComponent* capsule = (UCapsuleComponent*)GetComponentByClass(UCapsuleComponent::StaticClass());
+	//capsule->SetCapsuleHalfHeight(m_colliderSize);
+	capsule->SetCapsuleRadius(m_colliderSize);
+}
+
+void ABasicAsteroid::SpawnChildAsteroids(int amount)
+{
+	UWorld* world = GetWorld();
+	
+	float degreeSegment = 120.0f;
+	const FVector location = GetActorLocation();
+	const FRotator rotation = GetActorRotation();
+	for (int i = 0; i < amount; i++) 
+	{
+		ABasicAsteroid* asteroid = (ABasicAsteroid*)world->SpawnActor<ABasicAsteroid>(ABasicAsteroid::StaticClass(), location, rotation);
+		asteroid->SetAsChildAsteroid();
+
+		FVector randMovementDir = FVector(FMath::RandRange(-200.0f, 200.0f), FMath::RandRange(-200.0f, 200.0f), 0.0f);
+		asteroid->SetMovementDirection(randMovementDir);
+
+		FVector smallAsteroidScale = FVector(FMath::RandRange(1.0f, 2.0f), FMath::RandRange(1.0f, 2.0f), FMath::RandRange(1.0f, 2.0f));
+		asteroid->SetActorScale3D(smallAsteroidScale);
+	}
+}
+
+void ABasicAsteroid::SetRandomDirections()
+{
+	m_movementDirection = FVector(FMath::RandRange(-400.0f, 400.0f), FMath::RandRange(-400.0f, 400.0f), 0.0f);
+	m_rotationAmount = FMath::RandRange(-350.0f, 450.0f);
+}
+
+void ABasicAsteroid::SetMovementDirection(const FVector direction)
+{
+	m_movementDirection = direction;
+}
+
+void ABasicAsteroid::SetAsChildAsteroid()
+{
+	m_bIsChildAsteroid = true;
+}
+
+void ABasicAsteroid::SetRandomLocation()
+{
+	SetActorLocation(GetRndVectorInBoundary(1000.0f, 1000.0f));
 }
 
 FVector ABasicAsteroid::GetRndVectorInBoundary(float maxX, float maxY)
@@ -122,13 +181,4 @@ FVector ABasicAsteroid::GetRndVectorInBoundary(float maxX, float maxY)
 	position.Y = FMath::RandRange(-maxY, maxY);
 	position.Z = 0.0f;
 	return position;
-}
-
-void ABasicAsteroid::SetColliderSize(float size)
-{
-	m_colliderSize = size;
-
-	UCapsuleComponent* capsule = (UCapsuleComponent*)GetComponentByClass(UCapsuleComponent::StaticClass());
-	capsule->SetCapsuleHalfHeight(m_colliderSize);
-	capsule->SetCapsuleRadius(m_colliderSize);
 }
