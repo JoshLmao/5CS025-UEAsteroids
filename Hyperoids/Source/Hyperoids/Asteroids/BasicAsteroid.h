@@ -38,6 +38,9 @@ public:
 
 	void SetAsChildAsteroid();
 
+	int GetRewardScore();
+	void SetRewardScore(int amount);
+
 private:
 	// Current location of the Asteroid
 	FVector m_location;
@@ -50,6 +53,8 @@ private:
 	// Size of capsule collider for asteroid
 	float m_colliderSize;
 	bool m_bIsChildAsteroid;
+	// Amount of points to reward the player for destroying asteroid
+	int m_rewardScore;
 
 	FVector GetRndVectorInBoundary(float maxX, float maxY);
 

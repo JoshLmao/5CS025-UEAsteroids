@@ -207,3 +207,12 @@ void ASpaceshipPawn::FireProjectile()
 	projectile->SetMovementDirection(forward * m_projectileSpeed);
 }
 
+int ASpaceshipPawn::GetPlayerScore()
+{
+	return m_score;
+}
+
+void ASpaceshipPawn::AddPlayerScore(int amount)
+{
+	m_score += amount;
+}

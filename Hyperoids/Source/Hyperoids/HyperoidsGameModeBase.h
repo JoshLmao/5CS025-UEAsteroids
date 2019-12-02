@@ -25,9 +25,12 @@ public:
 
 	static const int MAX_ASTEROIDS;
 
+	void OnAsteroidDestroyed(class ABasicAsteroid* asteroid);
+
 private:
 	TArray<AActor*> m_asteroids;
 	FVector2D m_playArea;
+	class ASpaceshipPawn* m_player;
 
 	FTimerHandle SpawnHandle_CreateAsteroids;
 

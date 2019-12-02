@@ -38,6 +38,12 @@ public:
 	UFUNCTION()
 	void OnEndOverlap(AActor* overlappedActor, AActor* otherActor);
 
+	UFUNCTION(BlueprintCallable, Category="Player Score")
+	int GetPlayerScore();
+
+	UFUNCTION()
+	void AddPlayerScore(int amount);
+
 private:
 	// Speed at which the player turns themselves
 	UPROPERTY(EditAnywhere)
@@ -70,6 +76,8 @@ private:
 	float m_projectileWaitSeconds;
 	// Current cooldown time between shooting projectiles
 	float m_projectileTimer;
+	// The current score of the player 
+	int m_score;
 
 	class USoundBase* m_fireSound;
 	class UStaticMeshComponent* m_shipMeshComponent;

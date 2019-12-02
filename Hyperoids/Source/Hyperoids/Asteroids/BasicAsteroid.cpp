@@ -46,6 +46,8 @@ ABasicAsteroid::ABasicAsteroid()
 
 	OnActorBeginOverlap.AddDynamic(this, &ABasicAsteroid::OnOverlap);
 	OnActorEndOverlap.AddDynamic(this, &ABasicAsteroid::OnEndOverlap);
+
+	m_rewardScore = 10;
 }
 
 // Called when the game starts or when spawned
@@ -114,6 +116,9 @@ void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 			UE_LOG(LogTemp, Log, TEXT("Created '%d' child asteroids"), childAsteroidAmt);
 		}
 
+		auto gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();
+		gm->OnAsteroidDestroyed(this);
+
 		// Finally destroy once done
 		Destroy();
 	}
@@ -150,6 +155,8 @@ void ABasicAsteroid::SpawnChildAsteroids(int amount)
 
 		FVector smallAsteroidScale = FVector(FMath::RandRange(1.0f, 2.0f), FMath::RandRange(1.0f, 2.0f), FMath::RandRange(1.0f, 2.0f));
 		asteroid->SetActorScale3D(smallAsteroidScale);
+
+		asteroid->SetRewardScore(m_rewardScore / amount);
 	}
 }
 
@@ -181,4 +188,14 @@ FVector ABasicAsteroid::GetRndVectorInBoundary(float maxX, float maxY)
 	position.Y = FMath::RandRange(-maxY, maxY);
 	position.Z = 0.0f;
 	return position;
+}
+
+int ABasicAsteroid::GetRewardScore()
+{
+	return m_rewardScore;
+}
+
+void ABasicAsteroid::SetRewardScore(int amount)
+{
+	m_rewardScore = amount;
 }

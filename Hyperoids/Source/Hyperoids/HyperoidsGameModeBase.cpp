@@ -6,6 +6,7 @@
 #include "Player/SpaceshipPawn.h"
 #include "Engine/World.h"
 #include "Engine/Public/TimerManager.h"
+#include "Kismet/GameplayStatics.h"
 
 const int AHyperoidsGameModeBase::MAX_ASTEROIDS = 15;
 
@@ -29,6 +30,8 @@ void AHyperoidsGameModeBase::StartPlay()
 		float delaySeconds = 15.0f;
 		GetWorldTimerManager().SetTimer(SpawnHandle_CreateAsteroids, this, &AHyperoidsGameModeBase::SpawnAsteroids, delaySeconds, true);
 	}
+
+	m_player = (ASpaceshipPawn*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 }
 
 FVector2D AHyperoidsGameModeBase::GetPlayArea()
@@ -62,8 +65,22 @@ void AHyperoidsGameModeBase::SpawnAsteroids()
 		FVector scale = FVector(FMath::RandRange(minScale, maxScale), FMath::RandRange(minScale, maxScale), FMath::RandRange(minScale, maxScale));
 		asteroid->SetActorScale3D(scale);
 
+		asteroid->SetRewardScore(5);
+
 		m_asteroids.Add(asteroid);
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("Spawned '%d' asteroids"), amountToSpawn)
+}
+
+void AHyperoidsGameModeBase::OnAsteroidDestroyed(ABasicAsteroid* asteroid)
+{
+	if (m_player)
+	{
+		m_player->AddPlayerScore(asteroid->GetRewardScore());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Unable to add score. No reference to Player!"));
+	}
 }
