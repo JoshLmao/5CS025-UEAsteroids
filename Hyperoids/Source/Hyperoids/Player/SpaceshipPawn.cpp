@@ -42,7 +42,9 @@ ASpaceshipPawn::ASpaceshipPawn()
 	m_projectileSpeed = 1000.0f;
 
 	m_bCanFire = true;
-	m_fireRate = 1.0f;
+	m_bIsAlive = true;
+
+	m_fireRate = 0.65f;
 	m_gunOffset = 70.0f;
 	
 	m_projectileWaitSeconds = 1.0f; // in seconds
@@ -57,7 +59,6 @@ ASpaceshipPawn::ASpaceshipPawn()
 		m_playerDeathSound = playerDeathAudio.Object;
 
 	OnActorBeginOverlap.AddDynamic(this, &ASpaceshipPawn::OnOverlap);
-	OnActorEndOverlap.AddDynamic(this, &ASpaceshipPawn::OnEndOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -77,6 +78,10 @@ void ASpaceshipPawn::EndPlay(const EEndPlayReason::Type endPlayReason)
 void ASpaceshipPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Disable shooting & movement on player death
+	if (!m_bIsAlive)
+		return;
 
 	const FVector LocalMove = FVector(m_currentForwardSpeed * DeltaTime, 0.f, 0.f);
 	AddActorLocalOffset(LocalMove, true);
@@ -100,6 +105,29 @@ void ASpaceshipPawn::Tick(float DeltaTime)
 			m_bCanFire = true;
 			m_projectileTimer = 0.0f;
 		}
+	}
+}
+
+void ASpaceshipPawn::OnOverlap(AActor* overlappedActor, AActor* otherActor)
+{
+	if (!m_bIsAlive)
+		return;
+	
+	FName tag = "";
+	if (otherActor->Tags.Num() > 0)
+		tag = otherActor->Tags[0];
+
+	if (tag == ABasicAsteroid::ASTEROID_TAG)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Player has died!"));
+
+		m_bIsAlive = false;
+
+		// Play sound on player death
+		if (m_playerDeathSound)
+			UGameplayStatics::PlaySoundAtLocation(this, m_playerDeathSound, GetActorLocation());
+
+		((AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode())->PlayerDeath(this);
 	}
 }
 
@@ -175,28 +203,8 @@ void ASpaceshipPawn::BoundaryCheck(float deltaTime)
 		bEdgeOfWorld = true;
 	}
 
-	SetActorLocation(playerLoc + MovementDirection * deltaTime, !bEdgeOfWorld);
-}
-
-void ASpaceshipPawn::OnOverlap(AActor* overlappedActor, AActor* otherActor)
-{
-	FName tag = "";
-	if (otherActor->Tags.Num() > 0)
-		tag = otherActor->Tags[0];
-
-	if (tag == ABasicAsteroid::ASTEROID_TAG)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player has died!"));
-
-		// Play sound on player death
-		if (m_playerDeathSound)
-			UGameplayStatics::PlaySoundAtLocation(this, m_playerDeathSound, GetActorLocation());
-	}
-}
-
-void ASpaceshipPawn::OnEndOverlap(AActor* overlappedActor, AActor* otherActor)
-{
-
+	if (bEdgeOfWorld)
+		SetActorLocation(playerLoc + MovementDirection * deltaTime, false);
 }
 
 void ASpaceshipPawn::FireProjectile()

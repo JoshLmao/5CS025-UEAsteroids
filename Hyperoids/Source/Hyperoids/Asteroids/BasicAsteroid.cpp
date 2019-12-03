@@ -50,7 +50,6 @@ ABasicAsteroid::ABasicAsteroid()
 	this->Tags.Add(ASTEROID_TAG);
 
 	OnActorBeginOverlap.AddDynamic(this, &ABasicAsteroid::OnOverlap);
-	OnActorEndOverlap.AddDynamic(this, &ABasicAsteroid::OnEndOverlap);
 
 	m_rewardScore = 10;
 }
@@ -59,6 +58,9 @@ ABasicAsteroid::ABasicAsteroid()
 void ABasicAsteroid::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AHyperoidsGameModeBase* gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();
+	m_playArea = gm->GetPlayArea();
 }
 
 // Called every frame
@@ -67,28 +69,25 @@ void ABasicAsteroid::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	m_location = GetActorLocation();
-
-	AHyperoidsGameModeBase* gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();
-	FVector2D playArea = gm->GetPlayArea();
-	if (m_location.X < -playArea.X)
+	if (m_location.X < -m_playArea.X)
 	{
-		m_location.X = playArea.X;
+		m_location.X = m_playArea.X;
 		bEdgeOfWorld = true;
 	}
-	if (m_location.X > playArea.X)
+	if (m_location.X > m_playArea.X)
 	{
-		m_location.X = -playArea.X;
+		m_location.X = -m_playArea.X;
 		bEdgeOfWorld = true;
 	}
 
-	if (m_location.Y < -playArea.Y)
+	if (m_location.Y < -m_playArea.Y)
 	{
-		m_location.Y = playArea.Y;
+		m_location.Y = m_playArea.Y;
 		bEdgeOfWorld = true;
 	}
-	if (m_location.Y > playArea.Y)
+	if (m_location.Y > m_playArea.Y)
 	{
-		m_location.Y = -playArea.Y;
+		m_location.Y = -m_playArea.Y;
 		bEdgeOfWorld = true;
 	}
 	
@@ -130,11 +129,6 @@ void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 		// Finally destroy once done
 		Destroy();
 	}
-}
-
-void ABasicAsteroid::OnEndOverlap(AActor* overlappedActor, AActor* otherActor)
-{
-
 }
 
 void ABasicAsteroid::SetColliderSize(float size)
@@ -186,14 +180,17 @@ void ABasicAsteroid::SetAsChildAsteroid()
 
 void ABasicAsteroid::SetRandomLocation()
 {
-	SetActorLocation(GetRndVectorInBoundary(1000.0f, 1000.0f));
+	AHyperoidsGameModeBase* gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();
+	FVector2D playArea = gm->GetPlayArea();
+	FVector2D spawnArea = gm->GetSpawnArea();
+	SetActorLocation(GetRndVectorInBoundary(playArea));
 }
 
-FVector ABasicAsteroid::GetRndVectorInBoundary(float maxX, float maxY)
+FVector ABasicAsteroid::GetRndVectorInBoundary(FVector2D playArea)
 {
 	FVector position;
-	position.X = FMath::RandRange(-maxX, maxX);
-	position.Y = FMath::RandRange(-maxY, maxY);
+	position.X = FMath::RandRange(-playArea.X, playArea.X);
+	position.Y = FMath::RandRange(-playArea.Y, playArea.Y);
 	position.Z = 0.0f;
 	return position;
 }

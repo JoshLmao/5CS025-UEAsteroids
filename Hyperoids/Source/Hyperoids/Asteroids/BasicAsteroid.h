@@ -22,9 +22,6 @@ protected:
 	UFUNCTION()
 	void OnOverlap(AActor* overlappedActor, AActor* otherActor);
 
-	UFUNCTION()
-	void OnEndOverlap(AActor* overlappedActor, AActor* otherActor);
-
 public:	
 	static const FName ASTEROID_TAG;
 
@@ -41,9 +38,12 @@ public:
 	int GetRewardScore();
 	void SetRewardScore(int amount);
 
+	static FVector GetRndVectorInBoundary(FVector2D playArea);
+
 private:
 	// Current location of the Asteroid
 	FVector m_location;
+	FVector2D m_playArea;
 	// Is the asteroid at the edge of the world (screen)
 	bool bEdgeOfWorld;
 	// Amount of rotation to apply to the asteroid
@@ -57,8 +57,6 @@ private:
 	int m_rewardScore;
 
 	class USoundBase* m_explodeSound;
-
-	FVector GetRndVectorInBoundary(float maxX, float maxY);
 
 	// Sets the overall size of the collider for this asteroid
 	void SetColliderSize(float size);

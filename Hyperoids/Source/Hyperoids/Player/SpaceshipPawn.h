@@ -35,9 +35,6 @@ public:
 	UFUNCTION()
 	void OnOverlap(AActor* overlappedActor, AActor* otherActor);
 
-	UFUNCTION()
-	void OnEndOverlap(AActor* overlappedActor, AActor* otherActor);
-
 	UFUNCTION(BlueprintCallable, Category="Player Score")
 	int GetPlayerScore();
 
@@ -69,6 +66,9 @@ private:
 	bool bEdgeOfWorld;
 	// Can the player fire a projectile
 	bool m_bCanFire;
+	// If the player is alive or dead
+	bool m_bIsAlive;
+
 	float m_fireRate;
 	// Amount of units to spawn the projectile from the player's ship
 	float m_gunOffset;

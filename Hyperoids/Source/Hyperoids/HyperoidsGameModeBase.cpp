@@ -15,6 +15,7 @@ AHyperoidsGameModeBase::AHyperoidsGameModeBase()
 	DefaultPawnClass = ASpaceshipPawn::StaticClass();
 
 	m_playArea = FVector2D(1000.0f, 1900.0f);
+	m_spawnArea = FVector2D(300.0f, 300.0f);
 }
 
 void AHyperoidsGameModeBase::StartPlay()
@@ -39,6 +40,11 @@ FVector2D AHyperoidsGameModeBase::GetPlayArea()
 	return m_playArea;
 }
 
+FVector2D AHyperoidsGameModeBase::GetSpawnArea()
+{
+	return m_spawnArea;
+}
+
 void AHyperoidsGameModeBase::SpawnAsteroids()
 {
 	if (m_asteroids.Num() >= MAX_ASTEROIDS)
@@ -47,17 +53,15 @@ void AHyperoidsGameModeBase::SpawnAsteroids()
 		return;
 	}
 
-	int amountToSpawn = FMath::RandRange(2, 5);
+	int amountToSpawn = FMath::RandRange(3, 6);
 	UWorld* world = GetWorld();
 	for (int i = 0; i < amountToSpawn; i++) 
 	{
-		const FVector randLocation = FVector();
+		const FVector randLocation = ABasicAsteroid::GetRndVectorInBoundary(m_playArea);
 		const FRotator randRotation = FRotator();
 		ABasicAsteroid* asteroid = world->SpawnActor<ABasicAsteroid>(ABasicAsteroid::StaticClass(), randLocation, randRotation);
+		// Give random spin & movement direction
 		asteroid->SetRandomDirections();
-
-		//Give random location on initial spawn
-		asteroid->SetRandomLocation();
 
 		// Give a random scale to asteroid
 		float minScale = 1.0f;
@@ -83,4 +87,9 @@ void AHyperoidsGameModeBase::OnAsteroidDestroyed(ABasicAsteroid* asteroid)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Unable to add score. No reference to Player!"));
 	}
+}
+
+void AHyperoidsGameModeBase::PlayerDeath(AActor* player)
+{
+	OnPlayerDeath.Broadcast(player);
 }
