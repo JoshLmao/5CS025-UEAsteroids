@@ -56,6 +56,8 @@ private:
 	// Amount of points to reward the player for destroying asteroid
 	int m_rewardScore;
 
+	class USoundBase* m_explodeSound;
+
 	FVector GetRndVectorInBoundary(float maxX, float maxY);
 
 	// Sets the overall size of the collider for this asteroid

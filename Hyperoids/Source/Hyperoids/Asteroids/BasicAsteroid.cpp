@@ -7,6 +7,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "HyperoidsGameModeBase.h"
 #include "Player\ShipProjectile.h"
@@ -40,6 +41,10 @@ ABasicAsteroid::ABasicAsteroid()
 	{
 		UE_LOG(LogTemp, Error, TEXT("No Mesh set for BasicAsteroid!"));
 	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> asteroidExplodeSound(TEXT("SoundWave'/Game/Sounds/meteor_explode.meteor_explode'"));
+	if (asteroidExplodeSound.Succeeded())
+		m_explodeSound = asteroidExplodeSound.Object;
 
 	// Set the tag for all asteroids as a way to identify collisions
 	this->Tags.Add(ASTEROID_TAG);
@@ -100,8 +105,6 @@ void ABasicAsteroid::Tick(float DeltaTime)
 
 void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 {
-	//UE_LOG(LogTemp, Log, TEXT("Asteroid '%s' hit by '%s'"), *overlappedActor->GetName(), *otherActor->GetName());
-
 	FName tag;
 	if (otherActor->Tags.Num() > 0)
 		tag = otherActor->Tags[0];
@@ -114,6 +117,11 @@ void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 			int childAsteroidAmt = FMath::RandRange(2, 4);
 			SpawnChildAsteroids(childAsteroidAmt);
 			UE_LOG(LogTemp, Log, TEXT("Created '%d' child asteroids"), childAsteroidAmt);
+		}
+
+		if (m_explodeSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, m_explodeSound, GetActorLocation());
 		}
 
 		auto gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();

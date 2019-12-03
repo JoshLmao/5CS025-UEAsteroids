@@ -80,6 +80,8 @@ private:
 	int m_score;
 
 	class USoundBase* m_fireSound;
+	class USoundBase* m_playerDeathSound;
+
 	class UStaticMeshComponent* m_shipMeshComponent;
 
 	FTimerHandle TimerHandle_ShotTimerExpired;

@@ -9,6 +9,7 @@
 #include "Engine/CollisionProfile.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/EngineTypes.h"
+#include "Kismet\GameplayStatics.h"
 
 #include "Asteroids/BasicAsteroid.h"
 #include "HyperoidsGameModeBase.h"
@@ -47,9 +48,13 @@ ASpaceshipPawn::ASpaceshipPawn()
 	m_projectileWaitSeconds = 1.0f; // in seconds
 	m_projectileTimer = 0.0f;
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> FireAudio(TEXT("SoundWave'/Game/TwinStick/Audio/TwinStickFire.TwinStickFire'"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> FireAudio(TEXT("SoundWave'/Game/Sounds/player_shoot.player_shoot'"));
 	if (FireAudio.Succeeded())
 		m_fireSound = FireAudio.Object;
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> playerDeathAudio(TEXT("SoundWave'/Game/Sounds/player_death.player_death'"));
+	if (playerDeathAudio.Succeeded())
+		m_playerDeathSound = playerDeathAudio.Object;
 
 	OnActorBeginOverlap.AddDynamic(this, &ASpaceshipPawn::OnOverlap);
 	OnActorEndOverlap.AddDynamic(this, &ASpaceshipPawn::OnEndOverlap);
@@ -182,6 +187,10 @@ void ASpaceshipPawn::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 	if (tag == ABasicAsteroid::ASTEROID_TAG)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player has died!"));
+
+		// Play sound on player death
+		if (m_playerDeathSound)
+			UGameplayStatics::PlaySoundAtLocation(this, m_playerDeathSound, GetActorLocation());
 	}
 }
 
@@ -205,6 +214,10 @@ void ASpaceshipPawn::FireProjectile()
 	// Set movement vector to be forward position of player
 	FVector forward = GetActorForwardVector();
 	projectile->SetMovementDirection(forward * m_projectileSpeed);
+
+	// Play sound for shooting
+	if (m_fireSound)
+		UGameplayStatics::PlaySoundAtLocation(this, m_fireSound, GetActorLocation());
 }
 
 int ASpaceshipPawn::GetPlayerScore()

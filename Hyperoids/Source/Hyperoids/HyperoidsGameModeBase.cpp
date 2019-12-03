@@ -8,7 +8,7 @@
 #include "Engine/Public/TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 
-const int AHyperoidsGameModeBase::MAX_ASTEROIDS = 15;
+const int AHyperoidsGameModeBase::MAX_ASTEROIDS = 8;
 
 AHyperoidsGameModeBase::AHyperoidsGameModeBase()
 {
@@ -47,7 +47,7 @@ void AHyperoidsGameModeBase::SpawnAsteroids()
 		return;
 	}
 
-	int amountToSpawn = FMath::RandRange(3, 6);
+	int amountToSpawn = FMath::RandRange(2, 5);
 	UWorld* world = GetWorld();
 	for (int i = 0; i < amountToSpawn; i++) 
 	{
