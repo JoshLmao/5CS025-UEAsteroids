@@ -8,11 +8,17 @@
 #include "Engine/Public/TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "UI/HyperoidsHUD.h"
+#include "Player/SpaceshipPlayerState.h"
+
 const int AHyperoidsGameModeBase::MAX_ASTEROIDS = 8;
 
 AHyperoidsGameModeBase::AHyperoidsGameModeBase()
 {
+	// Set default classes for game objects
 	DefaultPawnClass = ASpaceshipPawn::StaticClass();
+	PlayerStateClass = ASpaceshipPlayerState::StaticClass();
+	HUDClass = AHyperoidsHUD::StaticClass();
 
 	m_playArea = FVector2D(1000.0f, 1900.0f);
 	m_spawnArea = FVector2D(300.0f, 300.0f);
@@ -81,7 +87,11 @@ void AHyperoidsGameModeBase::OnAsteroidDestroyed(ABasicAsteroid* asteroid)
 {
 	if (m_player)
 	{
-		m_player->AddPlayerScore(asteroid->GetRewardScore());
+		ASpaceshipPlayerState* state = Cast<ASpaceshipPlayerState>(m_player->GetPlayerState());
+		if (state) 
+		{
+			state->AddScore(asteroid->GetRewardScore());
+		}
 	}
 	else
 	{

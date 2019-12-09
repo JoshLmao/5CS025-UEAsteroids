@@ -227,13 +227,3 @@ void ASpaceshipPawn::FireProjectile()
 	if (m_fireSound)
 		UGameplayStatics::PlaySoundAtLocation(this, m_fireSound, GetActorLocation());
 }
-
-int ASpaceshipPawn::GetPlayerScore()
-{
-	return m_score;
-}
-
-void ASpaceshipPawn::AddPlayerScore(int amount)
-{
-	m_score += amount;
-}
