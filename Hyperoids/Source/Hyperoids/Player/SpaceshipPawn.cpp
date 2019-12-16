@@ -44,10 +44,10 @@ ASpaceshipPawn::ASpaceshipPawn()
 	m_bCanFire = true;
 	m_bIsAlive = true;
 
-	m_fireRate = 0.65f;
+	// Rate in seconds
+	m_fireRate = 0.4f;
 	m_gunOffset = 70.0f;
 	
-	m_projectileWaitSeconds = 1.0f; // in seconds
 	m_projectileTimer = 0.0f;
 
 	static ConstructorHelpers::FObjectFinder<USoundBase> FireAudio(TEXT("SoundWave'/Game/Sounds/player_shoot.player_shoot'"));
@@ -100,7 +100,7 @@ void ASpaceshipPawn::Tick(float DeltaTime)
 	if (!m_bCanFire)
 	{
 		m_projectileTimer += DeltaTime;
-		if (m_projectileTimer >= m_projectileWaitSeconds)
+		if (m_projectileTimer >= m_fireRate)
 		{
 			m_bCanFire = true;
 			m_projectileTimer = 0.0f;

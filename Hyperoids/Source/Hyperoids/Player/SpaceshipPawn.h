@@ -63,11 +63,10 @@ private:
 	// If the player is alive or dead
 	bool m_bIsAlive;
 
-	float m_fireRate;
 	// Amount of units to spawn the projectile from the player's ship
 	float m_gunOffset;
 	// Amount of seconds to wait unbetween shooting projectiles
-	float m_projectileWaitSeconds;
+	float m_fireRate;
 	// Current cooldown time between shooting projectiles
 	float m_projectileTimer;
 
