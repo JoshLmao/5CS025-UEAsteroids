@@ -6,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "SpaceshipPawn.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSpaceshipPawnOnDeathSignature, class ASpaceshipPawn*, actor);
+
 UCLASS()
 class HYPEROIDS_API ASpaceshipPawn : public APawn
 {
@@ -34,6 +36,9 @@ public:
 
 	UFUNCTION()
 	void OnOverlap(AActor* overlappedActor, AActor* otherActor);
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FSpaceshipPawnOnDeathSignature OnPlayerDeath;
 
 private:
 	// Speed at which the player turns themselves

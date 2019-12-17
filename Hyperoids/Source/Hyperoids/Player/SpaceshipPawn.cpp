@@ -127,7 +127,8 @@ void ASpaceshipPawn::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 		if (m_playerDeathSound)
 			UGameplayStatics::PlaySoundAtLocation(this, m_playerDeathSound, GetActorLocation());
 
-		((AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode())->PlayerDeath(this);
+		if (OnPlayerDeath.IsBound())
+			OnPlayerDeath.Broadcast(this);
 	}
 }
 

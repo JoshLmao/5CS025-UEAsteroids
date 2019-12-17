@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "BasicAsteroid.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FBasicAsteroidDestroyedSignature, ABasicAsteroid*, Asteroid);
+
 UCLASS()
 class HYPEROIDS_API ABasicAsteroid : public AActor
 {
@@ -31,14 +33,19 @@ public:
 	void SetRandomDirections();
 
 	void SetMovementDirection(const FVector direction);
-	void SetRandomLocation();
 
 	void SetAsChildAsteroid();
 
 	int GetRewardScore();
 	void SetRewardScore(int amount);
 
-	static FVector GetRndVectorInBoundary(FVector2D playArea);
+	/* Returns a random vector inside the given play area */
+	static FVector2D GetRndVectorInBoundary(FVector2D playArea);
+	/* Returns a random vector inside the given area that is outside the safe area (Hollow ractangle inside playArea) */
+	static FVector2D GetRndVectorInBoundary(FVector2D playArea, FVector2D safeArea);
+
+	UPROPERTY(BlueprintAssignable)
+	FBasicAsteroidDestroyedSignature OnAsteroidDestroyed;
 
 private:
 	// Current location of the Asteroid

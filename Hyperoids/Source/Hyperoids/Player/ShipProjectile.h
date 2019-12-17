@@ -35,4 +35,5 @@ public:
 
 private:
 	FVector m_movementDirection;
+	FVector2D m_playArea;
 };

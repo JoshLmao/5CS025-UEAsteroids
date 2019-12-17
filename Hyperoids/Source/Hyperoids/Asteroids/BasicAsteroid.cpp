@@ -113,7 +113,7 @@ void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 		// Spawn Asteroids if not a child asteroid
 		if (!m_bIsChildAsteroid)
 		{
-			int childAsteroidAmt = FMath::RandRange(2, 4);
+			int childAsteroidAmt = FMath::RandRange(1, 3);
 			SpawnChildAsteroids(childAsteroidAmt);
 			UE_LOG(LogTemp, Log, TEXT("Created '%d' child asteroids"), childAsteroidAmt);
 		}
@@ -123,8 +123,9 @@ void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 			UGameplayStatics::PlaySoundAtLocation(this, m_explodeSound, GetActorLocation());
 		}
 
-		auto gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();
-		gm->OnAsteroidDestroyed(this);
+		// Call event to show asteroid has been destroyed
+		if (OnAsteroidDestroyed.IsBound())
+			OnAsteroidDestroyed.Broadcast(this);
 
 		// Finally destroy once done
 		Destroy();
@@ -178,20 +179,26 @@ void ABasicAsteroid::SetAsChildAsteroid()
 	m_bIsChildAsteroid = true;
 }
 
-void ABasicAsteroid::SetRandomLocation()
+FVector2D ABasicAsteroid::GetRndVectorInBoundary(FVector2D playArea)
 {
-	AHyperoidsGameModeBase* gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();
-	FVector2D playArea = gm->GetPlayArea();
-	FVector2D spawnArea = gm->GetSpawnArea();
-	SetActorLocation(GetRndVectorInBoundary(playArea));
-}
-
-FVector ABasicAsteroid::GetRndVectorInBoundary(FVector2D playArea)
-{
-	FVector position;
+	FVector2D position;
 	position.X = FMath::RandRange(-playArea.X, playArea.X);
 	position.Y = FMath::RandRange(-playArea.Y, playArea.Y);
-	position.Z = 0.0f;
+	return position;
+}
+
+FVector2D ABasicAsteroid::GetRndVectorInBoundary(FVector2D playArea, FVector2D safeArea)
+{
+	FVector2D position;
+	
+	while (position.X < safeArea.X && position.X > -safeArea.X) {
+		position.X = FMath::RandRange(-playArea.X, playArea.X);
+	}
+	
+	while (position.Y > safeArea.Y && position.Y < -safeArea.Y) {
+		position.Y = FMath::RandRange(-playArea.Y, playArea.Y);
+	}
+	
 	return position;
 }
 

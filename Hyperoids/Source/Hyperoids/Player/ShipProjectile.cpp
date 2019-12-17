@@ -47,6 +47,8 @@ void AShipProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	AHyperoidsGameModeBase* gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();
+	m_playArea = gm->GetPlayArea();
 }
 
 // Called every frame
@@ -55,17 +57,15 @@ void AShipProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	FVector location = GetActorLocation();
-	AHyperoidsGameModeBase* gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();
-	FVector2D playArea = gm->GetPlayArea();
 	
 	bool bAtEdge = false;
-	if (location.X < -playArea.X)
+	if (location.X < -m_playArea.X)
 		bAtEdge = true;
-	if (location.X > playArea.X)
+	if (location.X > m_playArea.X)
 		bAtEdge = true;
-	if (location.Y < -playArea.Y)
+	if (location.Y < -m_playArea.Y)
 		bAtEdge = true;
-	if (location.Y > playArea.Y)
+	if (location.Y > m_playArea.Y)
 		bAtEdge = true;
 
 	SetActorLocation(location + m_movementDirection * DeltaTime, false);
