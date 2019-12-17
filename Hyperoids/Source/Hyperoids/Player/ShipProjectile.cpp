@@ -9,9 +9,8 @@
 #include "Engine/CollisionProfile.h"
 
 #include "Asteroids\BasicAsteroid.h"
+#include "Enemy/AlienShip.h"
 #include "HyperoidsGameModeBase.h"
-
-const FName AShipProjectile::PROJECTILE_TAG = TEXT("projectile");
 
 // Sets default values
 AShipProjectile::AShipProjectile()
@@ -34,8 +33,6 @@ AShipProjectile::AShipProjectile()
 	{
 		UE_LOG(LogTemp, Error, TEXT("No mesh found for Projectile!"));
 	}
-
-	this->Tags.Add(PROJECTILE_TAG);
 
 	// Add Overlap listeners to detect when hitting asteroid
 	OnActorBeginOverlap.AddDynamic(this, &AShipProjectile::OnOverlap);
@@ -75,13 +72,9 @@ void AShipProjectile::Tick(float DeltaTime)
 
 void AShipProjectile::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 {
-	FName tag;
-	if (otherActor->Tags.Num() > 0)
-		tag = otherActor->Tags[0];
-
-	if (tag == ABasicAsteroid::ASTEROID_TAG)
+	if (otherActor->IsA(ABasicAsteroid::StaticClass()) || otherActor->IsA(AAlienShip::StaticClass()))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Projectile collided with Asteroid - Blow asteroid up"));
+		UE_LOG(LogTemp, Log, TEXT("Projectile collided with a game object"));
 		this->Destroy();
 	}
 }

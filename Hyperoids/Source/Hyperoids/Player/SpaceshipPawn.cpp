@@ -15,6 +15,7 @@
 #include "Asteroids/BasicAsteroid.h"
 #include "HyperoidsGameModeBase.h"
 #include "Player\ShipProjectile.h"
+#include "Enemy\AlienShip.h"
 
 // Sets default values
 ASpaceshipPawn::ASpaceshipPawn()
@@ -116,12 +117,8 @@ void ASpaceshipPawn::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 {
 	if (!m_bIsAlive)
 		return;
-	
-	FName tag = "";
-	if (otherActor->Tags.Num() > 0)
-		tag = otherActor->Tags[0];
 
-	if (tag == ABasicAsteroid::ASTEROID_TAG)
+	if (otherActor->IsA(ABasicAsteroid::StaticClass()) || otherActor->IsA(AAlienShip::StaticClass()))
 	{
 		m_bIsAlive = false;
 

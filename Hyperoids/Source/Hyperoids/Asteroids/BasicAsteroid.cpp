@@ -47,9 +47,6 @@ ABasicAsteroid::ABasicAsteroid()
 	if (asteroidExplodeSound.Succeeded())
 		m_explodeSound = asteroidExplodeSound.Object;
 
-	// Set the tag for all asteroids as a way to identify collisions
-	this->Tags.Add(ASTEROID_TAG);
-
 	OnActorBeginOverlap.AddDynamic(this, &ABasicAsteroid::OnOverlap);
 
 	m_rewardScore = 10;
@@ -109,11 +106,7 @@ void ABasicAsteroid::Tick(float DeltaTime)
 
 void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 {
-	FName tag;
-	if (otherActor->Tags.Num() > 0)
-		tag = otherActor->Tags[0];
-
-	if (tag == AShipProjectile::PROJECTILE_TAG)
+	if (otherActor->IsA(AShipProjectile::StaticClass()))
 	{
 		// Spawn Asteroids if not a child asteroid
 		if (!m_bIsChildAsteroid)

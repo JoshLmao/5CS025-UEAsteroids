@@ -26,8 +26,6 @@ protected:
 	void OnEndOverlap(AActor* overlappedActor, AActor* otherActor);
 
 public:	
-	static const FName PROJECTILE_TAG;
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

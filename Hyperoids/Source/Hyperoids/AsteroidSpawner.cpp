@@ -31,8 +31,6 @@ void AAsteroidSpawner::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No Asteroid set on AsteroidSpawner!"));
 	}
-
-	//DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(), FColor::Red, true, 1000, 0, 6);
 }
 
 void AAsteroidSpawner::Tick(float deltaTime)
@@ -66,7 +64,6 @@ void AAsteroidSpawner::SpawnAsteroids()
 
 		// Spawn the asteroid
 		ABasicAsteroid* asteroid = world->SpawnActor<ABasicAsteroid>(m_asteroid->GetDefaultObject()->GetClass(), position, randRotation);
-		UE_LOG(LogTemp, Log, TEXT("Spawned asteroid at %s"), *position.ToString());
 
 		// Give random spin & movement direction
 		asteroid->SetRandomDirections();
