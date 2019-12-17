@@ -198,13 +198,21 @@ FVector2D ABasicAsteroid::GetRndVectorInBoundary(FVector2D playArea)
 FVector2D ABasicAsteroid::GetRndVectorInBoundary(FVector2D playArea, FVector2D safeArea)
 {
 	FVector2D position;
-	
-	while (position.X < safeArea.X && position.X > -safeArea.X) {
+
+	if (safeArea.IsZero()) 
+	{
 		position.X = FMath::RandRange(-playArea.X, playArea.X);
-	}
-	
-	while (position.Y > safeArea.Y && position.Y < -safeArea.Y) {
 		position.Y = FMath::RandRange(-playArea.Y, playArea.Y);
+	}
+	else
+	{
+		while (position.X < safeArea.X && position.X > -safeArea.X) {
+			position.X = FMath::RandRange(-playArea.X, playArea.X);
+		}
+
+		while (position.Y > safeArea.Y&& position.Y < -safeArea.Y) {
+			position.Y = FMath::RandRange(-playArea.Y, playArea.Y);
+		}
 	}
 	
 	return position;

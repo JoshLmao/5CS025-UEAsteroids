@@ -4,36 +4,32 @@
 
 #include "CoreMinimal.h"
 #include "Engine/TriggerBox.h"
-#include "AsteroidSpawner.generated.h"
+#include "ActorSpawner.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HYPEROIDS_API AAsteroidSpawner : public ATriggerBox
+class HYPEROIDS_API AActorSpawner : public ATriggerBox
 {
 	GENERATED_BODY()
-	
 public:
-	AAsteroidSpawner();
+	AActorSpawner();
+
+	// Inteval at which an actor will spawn inside the spawn volume
+	UPROPERTY(EditAnywhere)
+	float SpawnTickInteval;
+
+	virtual void Tick(float deltaTime) override;
+
+	FVector2D GetSpawnerArea();
 
 protected:
-	virtual void BeginPlay() override;
-
-public:
-	virtual void Tick(float deltaTime) override;
-	
-	UFUNCTION()
-	void OnAsteroidDestroyed(class ABasicAsteroid* asteroid);
-
-	FVector2D GetPlayArea();
-
-private:
-	/* Type of asteroid to spawn inside the spawn volume */
+	/* Type of actor to spawn inside the spawn volume */
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ABasicAsteroid> m_asteroid;
+	TSubclassOf<class AActor> m_actorClass;
 
-	/* Safe area inside the spawn volume that won't spawn any asteroids*/
+	/* Safe area inside the spawn volume that won't spawn any actors */
 	UPROPERTY(EditAnywhere)
 	FVector2D m_spawnArea;
 
@@ -48,7 +44,13 @@ private:
 	/* Amount of asteroid actors that are already spawned */
 	int m_actorsCount;
 
+	/* Reference to the player for inherited classes to use */
 	class ASpaceshipPawn* m_player;
 
-	void SpawnAsteroids();
+	virtual void BeginPlay() override;
+
+	virtual void OnSpawnActor(AActor* actor);
+
+private:
+	void SpawnActors();
 };

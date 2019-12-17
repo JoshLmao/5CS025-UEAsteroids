@@ -24,6 +24,7 @@ AAlienShip::AAlienShip()
 	m_alienComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Alien Mesh"));
 	m_alienComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	m_alienComponent->SetGenerateOverlapEvents(true);
+	RootComponent = m_alienComponent;
 
 	// Set Alien Mesh to be correctly facing the top down camera
 	FRotator rotation;

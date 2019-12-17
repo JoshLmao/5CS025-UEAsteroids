@@ -8,7 +8,7 @@
 #include "Player/SpaceshipPawn.h"
 #include "UI/HyperoidsHUD.h"
 #include "Player/SpaceshipPlayerState.h"
-#include "AsteroidSpawner.h"
+#include "Asteroids/AsteroidSpawner.h"
 
 AHyperoidsGameModeBase::AHyperoidsGameModeBase()
 {
@@ -36,7 +36,8 @@ void AHyperoidsGameModeBase::StartPlay()
 			AAsteroidSpawner* spawner = Cast<AAsteroidSpawner>(actor);
 			if (spawner != nullptr)
 			{
-				m_playArea = spawner->GetPlayArea();
+				// Make the total play area as the spawner area of the asteroid spawner
+				m_playArea = spawner->GetSpawnerArea();
 				return;
 			}
 		}
