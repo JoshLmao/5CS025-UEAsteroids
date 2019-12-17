@@ -10,6 +10,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Engine/EngineTypes.h"
 #include "Kismet\GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
 
 #include "Asteroids/BasicAsteroid.h"
 #include "HyperoidsGameModeBase.h"
@@ -18,7 +19,21 @@
 // Sets default values
 ASpaceshipPawn::ASpaceshipPawn()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	m_currentForwardSpeed = 0.0f;
+	m_currentRotationSpeed = 0.0f;
+	m_currentFire = 0.0f;
+	m_projectileSpeed = 1000.0f;
+
+	m_bCanFire = true;
+	m_bIsAlive = true;
+
+	// Rate in seconds
+	m_fireRate = 0.4f;
+	m_gunOffset = 70.0f;
+
+	m_projectileTimer = 0.0f;
+	
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	m_shipMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ship Mesh"));
@@ -36,19 +51,9 @@ ASpaceshipPawn::ASpaceshipPawn()
 		UE_LOG(LogTemp, Error, TEXT("No Mesh has been set for the player!"));
 	}
 
-	m_currentForwardSpeed = 0.0f;
-	m_currentRotationSpeed = 0.0f;
-	m_currentFire = 0.0f;
-	m_projectileSpeed = 1000.0f;
-
-	m_bCanFire = true;
-	m_bIsAlive = true;
-
-	// Rate in seconds
-	m_fireRate = 0.4f;
-	m_gunOffset = 70.0f;
-	
-	m_projectileTimer = 0.0f;
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ExplosionSystem(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'"));
+	if (ExplosionSystem.Succeeded())
+		m_explosionPS = ExplosionSystem.Object;
 
 	static ConstructorHelpers::FObjectFinder<USoundBase> FireAudio(TEXT("SoundWave'/Game/Sounds/player_shoot.player_shoot'"));
 	if (FireAudio.Succeeded())
@@ -71,7 +76,6 @@ void ASpaceshipPawn::BeginPlay()
 void ASpaceshipPawn::EndPlay(const EEndPlayReason::Type endPlayReason)
 {
 	Super::EndPlay(endPlayReason);
-
 }
 
 // Called every frame
@@ -119,16 +123,26 @@ void ASpaceshipPawn::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 
 	if (tag == ABasicAsteroid::ASTEROID_TAG)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Player has died!"));
-
 		m_bIsAlive = false;
 
 		// Play sound on player death
-		if (m_playerDeathSound)
+		if (m_playerDeathSound) {
 			UGameplayStatics::PlaySoundAtLocation(this, m_playerDeathSound, GetActorLocation());
+		}
 
+		// Hide Player spaceship
+		m_shipMeshComponent->ToggleVisibility();
+
+		// Display Explosion in place of player's ship
+		if (m_explosionPS) {
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_explosionPS, this->GetTransform());
+		}
+
+		// Broadcast PlayerDeath event
 		if (OnPlayerDeath.IsBound())
 			OnPlayerDeath.Broadcast(this);
+
+		UE_LOG(LogTemp, Log, TEXT("Player has died!"));
 	}
 }
 

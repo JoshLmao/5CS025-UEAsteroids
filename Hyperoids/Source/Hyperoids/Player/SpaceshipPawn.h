@@ -79,6 +79,7 @@ private:
 	class USoundBase* m_playerDeathSound;
 
 	class UStaticMeshComponent* m_shipMeshComponent;
+	class UParticleSystem* m_explosionPS;
 
 	FTimerHandle TimerHandle_ShotTimerExpired;
 

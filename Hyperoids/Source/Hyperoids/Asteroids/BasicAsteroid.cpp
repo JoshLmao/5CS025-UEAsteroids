@@ -8,6 +8,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
 
 #include "HyperoidsGameModeBase.h"
 #include "Player\ShipProjectile.h"
@@ -52,6 +53,10 @@ ABasicAsteroid::ABasicAsteroid()
 	OnActorBeginOverlap.AddDynamic(this, &ABasicAsteroid::OnOverlap);
 
 	m_rewardScore = 10;
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ExplosionSystem(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'"));
+	if (ExplosionSystem.Succeeded())
+		m_explodePS = ExplosionSystem.Object;
 }
 
 // Called when the game starts or when spawned
@@ -118,9 +123,14 @@ void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 			UE_LOG(LogTemp, Log, TEXT("Created '%d' child asteroids"), childAsteroidAmt);
 		}
 
-		if (m_explodeSound)
-		{
+		// Play Explosion sound for Asteroid
+		if (m_explodeSound) {
 			UGameplayStatics::PlaySoundAtLocation(this, m_explodeSound, GetActorLocation());
+		}
+
+		// Display Explosion in place of player's ship
+		if (m_explodePS) {
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_explodePS, this->GetTransform());
 		}
 
 		// Call event to show asteroid has been destroyed
@@ -167,6 +177,11 @@ void ABasicAsteroid::SetRandomDirections()
 {
 	m_movementDirection = FVector(FMath::RandRange(-400.0f, 400.0f), FMath::RandRange(-400.0f, 400.0f), 0.0f);
 	m_rotationAmount = FMath::RandRange(-350.0f, 450.0f);
+}
+
+FVector ABasicAsteroid::GetMovementDirection()
+{
+	return m_movementDirection;
 }
 
 void ABasicAsteroid::SetMovementDirection(const FVector direction)

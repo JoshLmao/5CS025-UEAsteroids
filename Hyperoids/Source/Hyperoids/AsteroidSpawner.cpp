@@ -68,7 +68,6 @@ void AAsteroidSpawner::SpawnAsteroids()
 		ABasicAsteroid* asteroid = world->SpawnActor<ABasicAsteroid>(m_asteroid->GetDefaultObject()->GetClass(), position, randRotation);
 		UE_LOG(LogTemp, Log, TEXT("Spawned asteroid at %s"), *position.ToString());
 
-
 		// Give random spin & movement direction
 		asteroid->SetRandomDirections();
 

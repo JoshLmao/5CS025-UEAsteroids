@@ -24,7 +24,7 @@ protected:
 	UFUNCTION()
 	void OnOverlap(AActor* overlappedActor, AActor* otherActor);
 
-public:	
+public:
 	static const FName ASTEROID_TAG;
 
 	// Called every frame
@@ -32,11 +32,18 @@ public:
 	// Gives the asteroid a random movement direction and random rotation
 	void SetRandomDirections();
 
+	// Gets the current direction of movement of the asteroid
+	FVector GetMovementDirection();
+	// Sets the movement direction of this asteroid
 	void SetMovementDirection(const FVector direction);
 
+	// Mark this asteroid as a child of another asteroid that has already been destroyed
+	// If marked as a child, this asteroid will not spawn any more asteroids once destroyed
 	void SetAsChildAsteroid();
 
+	// Gets the amount of score to give to the player once destroyed
 	int GetRewardScore();
+	// Sets the amount of score to give to the player on destroyed
 	void SetRewardScore(int amount);
 
 	/* Returns a random vector inside the given play area */
@@ -44,12 +51,14 @@ public:
 	/* Returns a random vector inside the given area that is outside the safe area (Hollow ractangle inside playArea) */
 	static FVector2D GetRndVectorInBoundary(FVector2D playArea, FVector2D safeArea);
 
+	// Event for listenting to when this asteroid gets destroyed
 	UPROPERTY(BlueprintAssignable)
 	FBasicAsteroidDestroyedSignature OnAsteroidDestroyed;
 
 private:
 	// Current location of the Asteroid
 	FVector m_location;
+	// Total current play area of the game
 	FVector2D m_playArea;
 	// Is the asteroid at the edge of the world (screen)
 	bool bEdgeOfWorld;
@@ -63,7 +72,10 @@ private:
 	// Amount of points to reward the player for destroying asteroid
 	int m_rewardScore;
 
+	// Explosion sound to play once asteroid is destroyed
 	class USoundBase* m_explodeSound;
+	// Particle system to use once the asteroid is destroyed
+	class UParticleSystem* m_explodePS;
 
 	// Sets the overall size of the collider for this asteroid
 	void SetColliderSize(float size);
