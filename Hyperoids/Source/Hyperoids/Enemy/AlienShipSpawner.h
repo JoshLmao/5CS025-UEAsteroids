@@ -24,4 +24,15 @@ private:
 	UFUNCTION()
 	void OnAlienShipDeath(class AAlienShip* alienShip);
 
+	// Minimum movement direction values of AlienShips
+	UPROPERTY(EditAnywhere)
+	FVector m_minMovementDirection;
+
+	// Maximum movement direction values of AlienShips
+	UPROPERTY(EditAnywhere)
+	FVector m_maxMovementDirection;
+
+	// Minimum and maximum fire rate values in seconds
+	UPROPERTY(EditAnywhere)
+	FVector2D m_fireRateRange;
 };

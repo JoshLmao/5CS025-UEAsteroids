@@ -18,6 +18,8 @@ AActorSpawner::AActorSpawner()
 	m_minimumActors = 5;
 	m_actorsCount = 0;
 	m_spawnArea = FVector2D(0.0f, 0.0f);
+	m_bIsFirstTick = true;
+	m_bShouldTickOnStart = true;
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = SpawnTickInteval;
@@ -41,6 +43,11 @@ void AActorSpawner::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
 
+	if (!m_bShouldTickOnStart && m_bIsFirstTick) {
+		m_bIsFirstTick = false;
+		return;
+	}
+
 	SpawnActors();
 }
 
@@ -58,7 +65,7 @@ void AActorSpawner::SpawnActors()
 
 		// Spawn Asteroid and random location inside spawn area
 		FVector2D randLocation = ABasicAsteroid::GetRndVectorInBoundary(GetSpawnerArea(), m_spawnArea);
-		FRotator randRotation = FRotator();
+		FRotator rotation = FRotator(0.0f, 0.0f, 0.0f);
 
 		// Add spawner global location to random location inside spawn volume
 		FVector spawnerLocation = GetActorLocation();
@@ -67,8 +74,11 @@ void AActorSpawner::SpawnActors()
 		position.Y = randLocation.Y;
 		position.Z = spawnerLocation.Z;
 
+		position.X += spawnerLocation.X;
+		position.Y += spawnerLocation.Y;
+
 		// Spawn the asteroid
-		AActor* spawnedActor = world->SpawnActor<AActor>(m_actorClass->GetDefaultObject()->GetClass(), position, randRotation);
+		AActor* spawnedActor = world->SpawnActor<AActor>(m_actorClass->GetDefaultObject()->GetClass(), position, rotation);
 
 		OnSpawnActor(spawnedActor);
 	}

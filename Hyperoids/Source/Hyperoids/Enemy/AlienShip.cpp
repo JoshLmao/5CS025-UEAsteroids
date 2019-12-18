@@ -36,9 +36,10 @@ AAlienShip::AAlienShip()
 
 	// Set Alien Mesh to be correctly facing the top down camera
 	FRotator rotation;
-	rotation.Roll = -90; // X
-	rotation.Yaw = 90; // Z
-	m_alienComponent->AddLocalRotation(rotation);
+	rotation.Roll = -90.0f; // X
+	rotation.Pitch = 0.0f;
+	rotation.Yaw = 90.0f; // Z
+	m_alienComponent->SetRelativeRotation(rotation);
 	// Scale mesh up
 	m_alienComponent->SetWorldScale3D(FVector(3.0f, 3.0f, 3.0f));
 

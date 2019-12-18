@@ -44,6 +44,10 @@ protected:
 	/* Amount of asteroid actors that are already spawned */
 	int m_actorsCount;
 
+	/* Should the spawner run the first tick when the game has just begun to play */
+	UPROPERTY(EditAnywhere)
+	bool m_bShouldTickOnStart;
+
 	/* Reference to the player for inherited classes to use */
 	class ASpaceshipPawn* m_player;
 
@@ -52,5 +56,7 @@ protected:
 	virtual void OnSpawnActor(AActor* actor);
 
 private:
+	bool m_bIsFirstTick;
+
 	void SpawnActors();
 };
