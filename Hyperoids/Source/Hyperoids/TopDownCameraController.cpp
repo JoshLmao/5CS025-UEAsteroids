@@ -29,7 +29,10 @@ void ATopDownCameraController::BeginPlay()
 		if (playerController)
 			playerController->SetViewTarget(this);
 	}
-	
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Unable to set Top Down Camera as the main Target!"));
+	}
 }
 
 // Called every frame

@@ -42,6 +42,7 @@ void AActorSpawner::BeginPlay()
 void AActorSpawner::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
+	UE_LOG(LogTemp, Warning, TEXT("STARTING SPAWNING ACTORS"));
 
 	if (!m_bShouldTickOnStart && m_bIsFirstTick) {
 		m_bIsFirstTick = false;

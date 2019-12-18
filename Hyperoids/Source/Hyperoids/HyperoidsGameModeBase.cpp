@@ -38,7 +38,7 @@ void AHyperoidsGameModeBase::StartPlay()
 			{
 				// Make the total play area as the spawner area of the asteroid spawner
 				m_playArea = spawner->GetSpawnerArea();
-				return;
+				break;
 			}
 		}
 	}
