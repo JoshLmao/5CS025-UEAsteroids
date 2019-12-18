@@ -33,42 +33,6 @@ AShipProjectile::AShipProjectile()
 	{
 		UE_LOG(LogTemp, Error, TEXT("No mesh found for Projectile!"));
 	}
-
-	// Add Overlap listeners to detect when hitting asteroid
-	OnActorBeginOverlap.AddDynamic(this, &AShipProjectile::OnOverlap);
-	OnActorEndOverlap.AddDynamic(this, &AShipProjectile::OnEndOverlap);
-}
-
-// Called when the game starts or when spawned
-void AShipProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	AHyperoidsGameModeBase* gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();
-	m_playArea = gm->GetPlayArea();
-}
-
-// Called every frame
-void AShipProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	FVector location = GetActorLocation();
-	
-	bool bAtEdge = false;
-	if (location.X < -m_playArea.X)
-		bAtEdge = true;
-	if (location.X > m_playArea.X)
-		bAtEdge = true;
-	if (location.Y < -m_playArea.Y)
-		bAtEdge = true;
-	if (location.Y > m_playArea.Y)
-		bAtEdge = true;
-
-	SetActorLocation(location + m_movementDirection * DeltaTime, false);
-	if (bAtEdge) {
-		//Destroy();
-	}
 }
 
 void AShipProjectile::OnOverlap(AActor* overlappedActor, AActor* otherActor)
@@ -78,14 +42,4 @@ void AShipProjectile::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 		UE_LOG(LogTemp, Log, TEXT("Projectile collided with a game object"));
 		this->Destroy();
 	}
-}
-
-void AShipProjectile::OnEndOverlap(AActor* overlappedActor, AActor* otherActor)
-{
-
-}
-
-void AShipProjectile::SetMovementDirection(FVector moveDir)
-{
-	m_movementDirection = moveDir;
 }

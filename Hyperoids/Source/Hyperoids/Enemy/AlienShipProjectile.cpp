@@ -29,38 +29,6 @@ AAlienShipProjectile::AAlienShipProjectile()
 	{
 		UE_LOG(LogTemp, Error, TEXT("No mesh found for AlienShipProjectile!"));
 	}
-
-	OnActorBeginOverlap.AddDynamic(this, &AAlienShipProjectile::OnOverlap);
-}
-
-// Called when the game starts or when spawned
-void AAlienShipProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	AHyperoidsGameModeBase* gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();
-	m_playArea = gm->GetPlayArea();
-}
-
-// Called every frame
-void AAlienShipProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	FVector location = GetActorLocation();
-	bool bAtEdge = false;
-	if (location.X < -m_playArea.X)
-		bAtEdge = true;
-	if (location.X > m_playArea.X)
-		bAtEdge = true;
-	if (location.Y < -m_playArea.Y)
-		bAtEdge = true;
-	if (location.Y > m_playArea.Y)
-		bAtEdge = true;
-
-	SetActorLocation(location + m_movementDirection * DeltaTime, false);
-	if (bAtEdge)
-		Destroy();
 }
 
 void AAlienShipProjectile::OnOverlap(AActor* overlappedActor, AActor* otherActor)
@@ -70,9 +38,4 @@ void AAlienShipProjectile::OnOverlap(AActor* overlappedActor, AActor* otherActor
 		UE_LOG(LogTemp, Log, TEXT("Enemy Ship projectile collided with Player Pawn"));
 		this->Destroy();
 	}
-}
-
-void AAlienShipProjectile::SetMovementDirection(FVector moveDir)
-{
-	m_movementDirection = moveDir;
 }

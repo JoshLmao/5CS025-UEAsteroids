@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
+#include "ProjectileBase.h"
+
 #include "ShipProjectile.generated.h"
 
 UCLASS()
-class HYPEROIDS_API AShipProjectile : public AActor
+class HYPEROIDS_API AShipProjectile : public AProjectileBase
 {
 	GENERATED_BODY()
 	
@@ -15,23 +18,5 @@ public:
 	// Sets default values for this actor's properties
 	AShipProjectile();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	UFUNCTION()
-	void OnOverlap(AActor* overlappedActor, AActor* otherActor);
-
-	UFUNCTION()
-	void OnEndOverlap(AActor* overlappedActor, AActor* otherActor);
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	void SetMovementDirection(FVector moveDir);
-
-private:
-	FVector m_movementDirection;
-	FVector2D m_playArea;
+	virtual void OnOverlap(AActor* overlappedActor, AActor* otherActor) override;
 };
