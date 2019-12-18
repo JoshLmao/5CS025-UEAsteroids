@@ -13,8 +13,9 @@ class HYPEROIDS_API AAlienShipProjectile : public AProjectileBase
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+	//! Sets default values for this actor's properties
 	AAlienShipProjectile();
 
+	//! Override the overlap event to detect if projectile hits anything
 	virtual void OnOverlap(AActor* overlappedActor, AActor* otherActor) override;
 };

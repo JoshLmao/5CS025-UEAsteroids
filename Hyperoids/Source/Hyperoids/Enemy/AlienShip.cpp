@@ -80,7 +80,7 @@ void AAlienShip::Tick(float DeltaTime)
 
 	Move(DeltaTime);
 
-	if (m_bCanFire) 
+	if (m_bCanFire && m_player->GetIsAlive()) 
 	{
 		FireAtPlayer();
 	}

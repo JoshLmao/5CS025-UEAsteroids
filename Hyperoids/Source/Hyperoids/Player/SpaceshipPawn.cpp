@@ -75,11 +75,6 @@ void ASpaceshipPawn::BeginPlay()
 
 }
 
-void ASpaceshipPawn::EndPlay(const EEndPlayReason::Type endPlayReason)
-{
-	Super::EndPlay(endPlayReason);
-}
-
 // Called every frame
 void ASpaceshipPawn::Tick(float DeltaTime)
 {
@@ -102,7 +97,6 @@ void ASpaceshipPawn::Tick(float DeltaTime)
 	{
 		FireProjectile();
 	}
-
 
 	if (!m_bCanFire)
 	{
@@ -180,11 +174,6 @@ void ASpaceshipPawn::FireInput(float value)
 		m_currentFire = 0.0f;
 }
 
-void ASpaceshipPawn::ShotTimerExpired()
-{
-	m_bCanFire = true;
-}
-
 void ASpaceshipPawn::BoundaryCheck(float deltaTime)
 {
 	FVector playerLoc = GetActorLocation();
@@ -192,29 +181,29 @@ void ASpaceshipPawn::BoundaryCheck(float deltaTime)
 	// Works out if the world location is inside screen space location
 	UWorld* world = GetWorld();
 	AHyperoidsGameModeBase* gm = (AHyperoidsGameModeBase*)world->GetAuthGameMode();
-	FVector2D playArea = gm->GetPlayArea();
+	m_playArea = gm->GetPlayArea();
 
 	// Validate X is within boundary of play area
-	if (playerLoc.X < -playArea.X)
+	if (playerLoc.X < -m_playArea.X)
 	{
-		playerLoc.X = playArea.X;
+		playerLoc.X = m_playArea.X;
 		bEdgeOfWorld = true;
 	}
-	if (playerLoc.X > playArea.X)
+	if (playerLoc.X > m_playArea.X)
 	{
-		playerLoc.X = -playArea.X;
+		playerLoc.X = -m_playArea.X;
 		bEdgeOfWorld = true;
 	}
 
 	// Validate Y is within boundary of play area
-	if (playerLoc.Y < -playArea.Y)
+	if (playerLoc.Y < -m_playArea.Y)
 	{
-		playerLoc.Y = playArea.Y;
+		playerLoc.Y = m_playArea.Y;
 		bEdgeOfWorld = true;
 	}
-	if (playerLoc.Y > playArea.Y)
+	if (playerLoc.Y > m_playArea.Y)
 	{
-		playerLoc.Y = -playArea.Y;
+		playerLoc.Y = -m_playArea.Y;
 		bEdgeOfWorld = true;
 	}
 
@@ -242,4 +231,9 @@ void ASpaceshipPawn::FireProjectile()
 	// Play sound for shooting
 	if (m_fireSound)
 		UGameplayStatics::PlaySoundAtLocation(this, m_fireSound, GetActorLocation());
+}
+
+bool ASpaceshipPawn::GetIsAlive()
+{
+	return m_bIsAlive;
 }

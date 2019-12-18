@@ -45,8 +45,6 @@ void AAsteroidSpawner::OnAsteroidDestroyed(ABasicAsteroid* asteroid, TArray<ABas
 		if (state)
 			state->AddScore(asteroid->GetRewardScore());
 
-		// Remove even listener since asteroid is destroyed and change count
-		asteroid->OnAsteroidDestroyed.RemoveDynamic(this, &AAsteroidSpawner::OnAsteroidDestroyed);
 		m_actorsCount -= 1;
 
 		// If any child asteroids were spawned, add event listeners and repeat

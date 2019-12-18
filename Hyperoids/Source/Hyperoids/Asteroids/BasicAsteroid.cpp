@@ -13,8 +13,6 @@
 #include "HyperoidsGameModeBase.h"
 #include "Player\ShipProjectile.h"
 
-const FName ABasicAsteroid::ASTEROID_TAG = FName("asteroid");
-
 // Sets default values
 ABasicAsteroid::ABasicAsteroid()
 {

@@ -16,12 +16,12 @@ AHyperoidsGameModeBase::AHyperoidsGameModeBase()
 	DefaultPawnClass = ASpaceshipPawn::StaticClass();
 	PlayerStateClass = ASpaceshipPlayerState::StaticClass();
 	HUDClass = AHyperoidsHUD::StaticClass();
+
+	m_playArea = FVector2D(0.0f, 0.0f);
 }
 
 void AHyperoidsGameModeBase::StartPlay()
 {
-	Super::StartPlay();
-
 	TArray<AActor*> foundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAsteroidSpawner::StaticClass(), foundActors);
 
@@ -42,6 +42,8 @@ void AHyperoidsGameModeBase::StartPlay()
 			}
 		}
 	}
+
+	Super::StartPlay();
 }
 
 FVector2D AHyperoidsGameModeBase::GetPlayArea()
