@@ -20,12 +20,11 @@ void AAlienShipSpawner::OnSpawnActor(AActor* actor)
 		return;
 
 	// Set rate of fire and how much score the player will recieve
-	alien->SetFireRate(2.0f);
+	alien->SetFireRate(8.0f);
 	alien->SetRewardScore(20);
 
 	// Set the constant move direction of the AlienShip
-	FVector moveDir;
-	moveDir.Y = FMath::RandRange(100.0f, 200.0f);
+	FVector moveDir(0.0f, 100.0f, 0.0f);
 	alien->SetMovementDirection(moveDir);
 
 	alien->OnAlienDeath.AddDynamic(this, &AAlienShipSpawner::OnAlienShipDeath);

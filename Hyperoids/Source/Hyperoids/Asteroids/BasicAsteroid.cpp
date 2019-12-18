@@ -109,10 +109,11 @@ void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 	if (otherActor->IsA(AShipProjectile::StaticClass()))
 	{
 		// Spawn Asteroids if not a child asteroid
+		TArray<ABasicAsteroid*> childAsteroids;
 		if (!m_bIsChildAsteroid)
 		{
 			int childAsteroidAmt = FMath::RandRange(1, 3);
-			SpawnChildAsteroids(childAsteroidAmt);
+			childAsteroids = SpawnChildAsteroids(childAsteroidAmt);
 			UE_LOG(LogTemp, Log, TEXT("Created '%d' child asteroids"), childAsteroidAmt);
 		}
 
@@ -128,7 +129,7 @@ void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 
 		// Call event to show asteroid has been destroyed
 		if (OnAsteroidDestroyed.IsBound())
-			OnAsteroidDestroyed.Broadcast(this);
+			OnAsteroidDestroyed.Broadcast(this, childAsteroids);
 
 		// Finally destroy once done
 		Destroy();
@@ -144,11 +145,12 @@ void ABasicAsteroid::SetColliderSize(float size)
 	capsule->SetCapsuleRadius(m_colliderSize);
 }
 
-void ABasicAsteroid::SpawnChildAsteroids(int amount)
+TArray<ABasicAsteroid*> ABasicAsteroid::SpawnChildAsteroids(int amount)
 {
 	UWorld* world = GetWorld();
 	
-	float degreeSegment = 120.0f;
+	TArray<ABasicAsteroid*> children;
+
 	const FVector location = GetActorLocation();
 	const FRotator rotation = GetActorRotation();
 	for (int i = 0; i < amount; i++) 
@@ -162,8 +164,11 @@ void ABasicAsteroid::SpawnChildAsteroids(int amount)
 		FVector smallAsteroidScale = FVector(FMath::RandRange(1.0f, 2.0f), FMath::RandRange(1.0f, 2.0f), FMath::RandRange(1.0f, 2.0f));
 		asteroid->SetActorScale3D(smallAsteroidScale);
 
-		asteroid->SetRewardScore(m_rewardScore / amount);
+		asteroid->SetRewardScore(m_rewardScore * 0.5);
+		children.Add(asteroid);
 	}
+
+	return children;
 }
 
 void ABasicAsteroid::SetRandomDirections()

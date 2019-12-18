@@ -26,5 +26,5 @@ protected:
 	
 private:
 	UFUNCTION()
-	void OnAsteroidDestroyed(class ABasicAsteroid* asteroid);
+	void OnAsteroidDestroyed(class ABasicAsteroid* asteroid, TArray<class ABasicAsteroid*> childAsteroids);
 };

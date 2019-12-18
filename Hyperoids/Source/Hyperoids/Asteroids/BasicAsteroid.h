@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BasicAsteroid.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FBasicAsteroidDestroyedSignature, ABasicAsteroid*, Asteroid);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FBasicAsteroidDestroyedSignature, ABasicAsteroid*, Asteroid, TArray<ABasicAsteroid*>, ChildAsteroids);
 
 UCLASS()
 class HYPEROIDS_API ABasicAsteroid : public AActor
@@ -80,5 +80,5 @@ private:
 	// Sets the overall size of the collider for this asteroid
 	void SetColliderSize(float size);
 	// Spawns the amount of child asteroids from the asteroid location
-	void SpawnChildAsteroids(int amount);
+	TArray<ABasicAsteroid*> SpawnChildAsteroids(int amount);
 };

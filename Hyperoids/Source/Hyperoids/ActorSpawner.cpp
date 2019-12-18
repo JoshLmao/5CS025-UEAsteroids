@@ -27,9 +27,11 @@ void AActorSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
+	PrimaryActorTick.TickInterval = SpawnTickInteval;
+
 	if (!m_actorClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No Actor set on %s!"), *GetName());
+		UE_LOG(LogTemp, Warning, TEXT("No Actor set on '%s'!"), *GetName());
 	}
 
 	m_player = (ASpaceshipPawn*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
@@ -61,8 +63,8 @@ void AActorSpawner::SpawnActors()
 		// Add spawner global location to random location inside spawn volume
 		FVector spawnerLocation = GetActorLocation();
 		FVector position;
-		position.X = spawnerLocation.X + randLocation.X;
-		position.Y = spawnerLocation.Y + randLocation.Y;
+		position.X = randLocation.X;
+		position.Y = randLocation.Y;
 		position.Z = spawnerLocation.Z;
 
 		// Spawn the asteroid

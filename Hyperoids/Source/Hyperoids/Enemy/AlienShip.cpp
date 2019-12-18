@@ -7,18 +7,26 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Particles/ParticleSystem.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #include "Player\ShipProjectile.h"
+#include "Enemy/AlienShipProjectile.h"
 #include "HyperoidsGameModeBase.h"
+#include "Player/SpaceshipPawn.h"
 
 // Sets default values
 AAlienShip::AAlienShip()
 {
 	m_bIsAlive = true;
+	m_bCanFire = false;
+	m_projectileSpeed = 1000.0f;
+	m_projectileTimer = 0.0f;
+	m_fireRate = 8.0f;
+
 	m_movementDirection = FVector(0.0f, 0.0f, 0.0f);
 	m_rewardScore = 25;
 	m_playArea = FVector2D();
-	
+
 	PrimaryActorTick.bCanEverTick = true;
 
 	m_alienComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Alien Mesh"));
@@ -60,6 +68,8 @@ void AAlienShip::BeginPlay()
 	
 	AHyperoidsGameModeBase* gm = (AHyperoidsGameModeBase*)GetWorld()->GetAuthGameMode();
 	m_playArea = gm->GetPlayArea();
+
+	m_player = (ASpaceshipPawn*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 }
 
 // Called every frame
@@ -69,7 +79,18 @@ void AAlienShip::Tick(float DeltaTime)
 
 	Move(DeltaTime);
 
-	FireAtPlayer();
+	if (m_bCanFire) 
+	{
+		FireAtPlayer();
+	}
+	else
+	{
+		m_projectileTimer += DeltaTime;
+		if (m_projectileTimer >= m_fireRate) {
+			m_bCanFire = true;
+			m_projectileTimer = 0.0f;
+		}
+	}
 }
 
 void AAlienShip::OnOverlap(AActor* overlappedActor, AActor* otherActor)
@@ -164,6 +185,29 @@ void AAlienShip::Move(float deltaTime)
 
 void AAlienShip::FireAtPlayer()
 {
+	if (!m_bCanFire)
+		return;
 
+	m_bCanFire = false;
+
+	UWorld* world = GetWorld();
+	FVector location = GetActorLocation();
+	FRotator rotation = GetActorRotation();
+
+	// Spawn projectile & add offset
+	AAlienShipProjectile* projectile = (AAlienShipProjectile*)world->SpawnActor<AAlienShipProjectile>(AAlienShipProjectile::StaticClass(), location, rotation);
+	projectile->AddActorLocalOffset(FVector(100.0f, 0.0f, 0.0f));
+
+	// Find direction vector to player
+	FRotator rotat = UKismetMathLibrary::FindLookAtRotation(m_player->GetActorLocation(), GetActorLocation());
+	FVector vec = rotat.Vector();
+	vec.Normalize();
+
+	// Invert vector and shoot to target
+	projectile->SetMovementDirection(-vec * m_projectileSpeed);
+
+	// Play shoot sound
+	if (m_fireSound)
+		UGameplayStatics::PlaySoundAtLocation(this, m_fireSound, GetActorLocation());
 }
 

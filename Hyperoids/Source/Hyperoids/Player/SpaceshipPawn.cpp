@@ -16,6 +16,7 @@
 #include "HyperoidsGameModeBase.h"
 #include "Player\ShipProjectile.h"
 #include "Enemy\AlienShip.h"
+#include "Enemy\AlienShipProjectile.h"
 
 // Sets default values
 ASpaceshipPawn::ASpaceshipPawn()
@@ -102,6 +103,7 @@ void ASpaceshipPawn::Tick(float DeltaTime)
 		FireProjectile();
 	}
 
+
 	if (!m_bCanFire)
 	{
 		m_projectileTimer += DeltaTime;
@@ -118,7 +120,8 @@ void ASpaceshipPawn::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 	if (!m_bIsAlive)
 		return;
 
-	if (otherActor->IsA(ABasicAsteroid::StaticClass()) || otherActor->IsA(AAlienShip::StaticClass()))
+	// Player can be killed by Asteroid, Enemy Ship & Enemy Ship Projectile
+	if (otherActor->IsA(ABasicAsteroid::StaticClass()) || otherActor->IsA(AAlienShip::StaticClass()) || otherActor->IsA(AAlienShipProjectile::StaticClass()))
 	{
 		m_bIsAlive = false;
 
@@ -226,6 +229,7 @@ void ASpaceshipPawn::FireProjectile()
 	UWorld* world = GetWorld();
 	const FVector loc = GetActorLocation();
 	const FRotator rot = GetActorRotation();
+	
 	// Spawn projectile infront of ship with it's position & rotation
 	AShipProjectile* projectile = (AShipProjectile*)world->SpawnActor<AShipProjectile>(AShipProjectile::StaticClass(), loc, rot);
 	// Add offset to projectile so to now spawn inside player

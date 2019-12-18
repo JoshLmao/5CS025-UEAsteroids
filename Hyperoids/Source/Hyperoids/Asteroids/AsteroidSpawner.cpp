@@ -36,15 +36,28 @@ void AAsteroidSpawner::OnSpawnActor(AActor* actor)
 	asteroid->OnAsteroidDestroyed.AddDynamic(this, &AAsteroidSpawner::OnAsteroidDestroyed);
 }
 
-void AAsteroidSpawner::OnAsteroidDestroyed(ABasicAsteroid* asteroid)
+void AAsteroidSpawner::OnAsteroidDestroyed(ABasicAsteroid* asteroid, TArray<ABasicAsteroid*> childAsteroids)
 {
 	if (m_player && asteroid != nullptr)
 	{
+		// Get the score and add to player's score of destroyed asteroid
 		ASpaceshipPlayerState* state = Cast<ASpaceshipPlayerState>(m_player->GetPlayerState());
 		if (state)
 			state->AddScore(asteroid->GetRewardScore());
-
+		
+		// Remove destroyed asteroid from count
 		m_actorsCount -= 1;
+
+		// If any child asteroids were spawned, add event listeners and repeat
+		if (childAsteroids.Num() > 0) 
+		{
+			// Add child asteroids to count
+			m_actorsCount += childAsteroids.Num();
+			for (int i = 0; i < childAsteroids.Num(); i++) {
+				ABasicAsteroid* roid = childAsteroids[0];
+				roid->OnAsteroidDestroyed.AddDynamic(this, &AAsteroidSpawner::OnAsteroidDestroyed);
+			}
+		}
 	}
 	else
 	{
