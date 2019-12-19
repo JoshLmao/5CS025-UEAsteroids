@@ -206,6 +206,7 @@ void AAlienShip::FireAtPlayer()
 
 	// Invert vector and shoot to target
 	projectile->SetMovementDirection(-vec * m_projectileSpeed);
+	projectile->SetActorRotation(rotat);
 
 	// Play shoot sound
 	if (m_fireSound)

@@ -20,7 +20,7 @@ AAlienShipProjectile::AAlienShipProjectile()
 	meshComponent->SetGenerateOverlapEvents(true);
 	RootComponent = meshComponent;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> ProjectileMesh(TEXT("StaticMesh'/Game/TwinStick/Meshes/TwinStickProjectile.TwinStickProjectile'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> ProjectileMesh(TEXT("StaticMesh'/Game/Models/Projectile/Projectile.Projectile'"));
 	if (ProjectileMesh.Succeeded())
 	{
 		meshComponent->SetStaticMesh(ProjectileMesh.Object);

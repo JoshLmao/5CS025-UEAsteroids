@@ -43,7 +43,7 @@ ASpaceshipPawn::ASpaceshipPawn()
 
 	RootComponent = m_shipMeshComponent;
 	
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> ShipMesh(TEXT("StaticMesh'/Game/ExampleContent/Input_Examples/Meshes/SM_UFO_Main.SM_UFO_Main'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> ShipMesh(TEXT("StaticMesh'/Game/Models/SmallFighter/SmallSpaceFighter_Small_Space_Fighter.SmallSpaceFighter_Small_Space_Fighter'"));
 	if (ShipMesh.Succeeded())
 	{
 		m_shipMeshComponent->SetStaticMesh(ShipMesh.Object);
@@ -52,6 +52,8 @@ ASpaceshipPawn::ASpaceshipPawn()
 	{
 		UE_LOG(LogTemp, Error, TEXT("No Mesh has been set for the player!"));
 	}
+
+	m_shipMeshComponent->SetWorldScale3D(FVector(0.25f, 0.25f, 0.25f));
 
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> ExplosionSystem(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'"));
 	if (ExplosionSystem.Succeeded())
