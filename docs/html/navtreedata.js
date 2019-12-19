@@ -24,6 +24,11 @@ var NAVTREE =
 [
   [ "Hyperoids", "index.html", [
     [ "Classes", "annotated.html", [
+      [ "About", "index.html#autotoc_md0", null ],
+      [ "Game Setup Requirements", "index.html#autotoc_md1", null ],
+      [ "Main Camera", "index.html#autotoc_md2", null ],
+      [ "Main Player", "index.html#autotoc_md3", null ],
+      [ "Spawners", "index.html#autotoc_md4", null ],
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],

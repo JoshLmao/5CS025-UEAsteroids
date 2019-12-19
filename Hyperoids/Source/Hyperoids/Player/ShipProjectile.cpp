@@ -39,7 +39,7 @@ void AShipProjectile::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 {
 	if (otherActor->IsA(ABasicAsteroid::StaticClass()) || otherActor->IsA(AAlienShip::StaticClass()))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Projectile collided with a game object"));
+		UE_LOG(LogTemp, Log, TEXT("PlayerProjectile collided with '%s'"), *otherActor->GetName());
 		this->Destroy();
 	}
 }

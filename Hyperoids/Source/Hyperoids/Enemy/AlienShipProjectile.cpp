@@ -35,7 +35,7 @@ void AAlienShipProjectile::OnOverlap(AActor* overlappedActor, AActor* otherActor
 {
 	if (otherActor->IsA(ASpaceshipPawn::StaticClass()))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Enemy Ship projectile collided with Player Pawn"));
+		UE_LOG(LogTemp, Log, TEXT("EnemyShip projectile collided with '%s'"), *otherActor->GetName());
 		this->Destroy();
 	}
 }

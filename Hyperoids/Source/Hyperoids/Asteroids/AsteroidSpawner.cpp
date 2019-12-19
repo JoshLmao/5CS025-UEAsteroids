@@ -51,10 +51,13 @@ void AAsteroidSpawner::OnAsteroidDestroyed(ABasicAsteroid* asteroid, TArray<ABas
 		if (childAsteroids.Num() > 0) 
 		{
 			// Add child asteroids to count
-			m_actorsCount += childAsteroids.Num();
-			for (int i = 0; i < childAsteroids.Num(); i++) {
-				ABasicAsteroid* roid = childAsteroids[0];
-				roid->OnAsteroidDestroyed.AddDynamic(this, &AAsteroidSpawner::OnAsteroidDestroyed);
+			int childAsteroidCount = childAsteroids.Num();
+			m_actorsCount += childAsteroidCount;
+			for (int i = 0; i < childAsteroidCount; i++) 
+			{
+				if (childAsteroids.IsValidIndex(i)) {
+					childAsteroids[i]->OnAsteroidDestroyed.AddDynamic(this, &AAsteroidSpawner::OnAsteroidDestroyed);
+				}
 			}
 		}
 	}
