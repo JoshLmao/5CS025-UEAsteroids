@@ -43,7 +43,7 @@ ASpaceshipPawn::ASpaceshipPawn()
 
 	RootComponent = m_shipMeshComponent;
 	
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> ShipMesh(TEXT("StaticMesh'/Game/Models/SmallFighter/SmallSpaceFighter_Small_Space_Fighter.SmallSpaceFighter_Small_Space_Fighter'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> ShipMesh(TEXT("StaticMesh'/Game/Models/SmallFighter/SM_SmallSpaceFighter_Small_Space_Fighter.SM_SmallSpaceFighter_Small_Space_Fighter'"));
 	if (ShipMesh.Succeeded())
 	{
 		m_shipMeshComponent->SetStaticMesh(ShipMesh.Object);
@@ -232,7 +232,7 @@ void ASpaceshipPawn::FireProjectile()
 
 	// Play sound for shooting
 	if (m_fireSound)
-		UGameplayStatics::PlaySoundAtLocation(this, m_fireSound, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, m_fireSound, GetActorLocation(), 1.0f, FMath::RandRange(0.7f, 1.3f));
 }
 
 bool ASpaceshipPawn::GetIsAlive()

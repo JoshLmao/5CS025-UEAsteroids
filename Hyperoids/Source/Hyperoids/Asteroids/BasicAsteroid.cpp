@@ -117,7 +117,7 @@ void ABasicAsteroid::OnOverlap(AActor* overlappedActor, AActor* otherActor)
 
 		// Play Explosion sound for Asteroid
 		if (m_explodeSound) {
-			UGameplayStatics::PlaySoundAtLocation(this, m_explodeSound, GetActorLocation());
+			UGameplayStatics::PlaySoundAtLocation(this, m_explodeSound, GetActorLocation(), 1.0f, FMath::RandRange(0.7f, 1.3f));
 		}
 
 		// Display Explosion in place of player's ship

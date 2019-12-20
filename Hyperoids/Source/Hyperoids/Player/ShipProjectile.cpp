@@ -24,7 +24,7 @@ AShipProjectile::AShipProjectile()
 	meshComponent->SetGenerateOverlapEvents(true);
 	RootComponent = meshComponent;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> ProjectileMesh(TEXT("StaticMesh'/Game/Models/Player_Projectile/PlayerProjectile.PlayerProjectile'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> ProjectileMesh(TEXT("StaticMesh'/Game/Models/Player_Projectile/SM_double_shot_projectile.SM_double_shot_projectile'"));
 	if (ProjectileMesh.Succeeded())
 	{
 		meshComponent->SetStaticMesh(ProjectileMesh.Object);

@@ -210,6 +210,6 @@ void AAlienShip::FireAtPlayer()
 
 	// Play shoot sound
 	if (m_fireSound)
-		UGameplayStatics::PlaySoundAtLocation(this, m_fireSound, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, m_fireSound, GetActorLocation(), 1.0f, FMath::RandRange(0.7f, 1.3f));
 }
 
