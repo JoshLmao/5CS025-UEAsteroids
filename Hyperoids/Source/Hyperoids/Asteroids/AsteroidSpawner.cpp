@@ -42,8 +42,10 @@ void AAsteroidSpawner::OnAsteroidDestroyed(ABasicAsteroid* asteroid, TArray<ABas
 	{
 		// Get the score and add to player's score of destroyed asteroid
 		ASpaceshipPlayerState* state = Cast<ASpaceshipPlayerState>(m_player->GetPlayerState());
-		if (state)
+		if (state) {
 			state->AddScore(asteroid->GetRewardScore());
+			UE_LOG(LogTemp, Log, TEXT("'%s' destroyed. Player earning '%d' points"), *asteroid->GetName(), asteroid->GetRewardScore());
+		}
 
 		m_actorsCount -= 1;
 

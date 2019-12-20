@@ -49,8 +49,10 @@ void AAlienShipSpawner::OnAlienShipDeath(AAlienShip* alienShip)
 	{
 		// Get player state and add to players score
 		ASpaceshipPlayerState* state = Cast<ASpaceshipPlayerState>(m_player->GetPlayerState());
-		if (state)
+		if (state) {
 			state->AddScore(alienShip->GetRewardScore());
+			UE_LOG(LogTemp, Log, TEXT("'%s' destroyed. Player earning '%d' points"), *alienShip->GetName(), alienShip->GetRewardScore());
+		}
 	}
 	else
 	{
