@@ -12,6 +12,7 @@
 AAsteroidSpawner::AAsteroidSpawner()
 {
 	m_player = nullptr;
+	m_spawnArea = FVector2D(450, 800);
 }
 
 void AAsteroidSpawner::OnSpawnActor(AActor* actor)
